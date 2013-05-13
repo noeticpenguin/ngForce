@@ -24,14 +24,14 @@ Thereafter in the controller you can utilize the vfr service much like the $http
 vfr returns a promise, and therefore your controllers can have a clean(er), less call-back-hell flow to them. Additionally, because promises are binary, you can group vfr callouts and act on that data only once all of the promises have resolved. For example, here's a simple SOQL query returning records via promise:
 
 ```javascript
-	var pOppQuery = vfr.query("SELECT Id, Name, Account.Name, LeadSource, Probability, CloseDate, StageName, Amount FROM Opportunity ORDER BY CloseDate DESC");
-	pOppQuery.then(function(d) {
-		$scope.opportunities = d.records;
-		if(!$scope.$$phase) {
-			$scope.$digest();
-		}
-	});
-	``` 
+var pOppQuery = vfr.query("SELECT Id, Name, Account.Name, LeadSource, Probability, CloseDate, StageName, Amount FROM Opportunity ORDER BY CloseDate DESC");
+pOppQuery.then(function(d) {
+	$scope.opportunities = d.records;
+	if(!$scope.$$phase) {
+		$scope.$digest();
+	}
+});
+```
 
 Why is this important?
 ======================
