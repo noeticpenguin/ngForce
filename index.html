@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Ngforce by noeticpenguin</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Ngforce</h1>
+        <h2>Force.com Angular.js framework. A better description forthwith.</h2>
+        <a href="https://github.com/noeticpenguin/ngForce" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>ngForce</h1>
+
+<p>Force.com Angular.js framework.</p>
+
+<p>You can find the production ready version of the library under js/ngForce/</p>
+
+<p>Note: this is distributed unminified so that you can minify it with the rest of your Angular.js code</p>
+
+<h1>Usage</h1>
+
+<p>During the creation of your application module, inject the ngForce dependcy thusly:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">'ngForceDemo'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'ui.bootstrap'</span><span class="p">,</span> <span class="s1">'ui'</span><span class="p">,</span> <span class="s1">'ngForce'</span><span class="p">]);</span>
+</pre></div>
+
+<p>Once your app Module has been defined, you can include the service ngForce provides, 'vfr' in any of your controllers by adding it to the dependency injection list like this:</p>
+
+<div class="highlight"><pre><span class="nx">app</span><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">'oppBoxCtrl'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">,</span> <span class="nx">$dialog</span><span class="p">,</span> <span class="nx">vfr</span><span class="p">)</span>
+</pre></div>
+
+<p>Thereafter in the controller you can utilize the vfr service much like the $http, or $q services in Angular.
+vfr returns a promise, and therefore your controllers can have a clean(er), less call-back-hell flow to them. Additionally, because promises are binary, you can group vfr callouts and act on that data only once all of the promises have resolved. For example, here's a simple SOQL query returning records via promise:</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">pOppQuery</span> <span class="o">=</span> <span class="nx">vfr</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"SELECT Id, Name, Account.Name, LeadSource, Probability, CloseDate, StageName, Amount FROM Opportunity ORDER BY CloseDate DESC"</span><span class="p">);</span>
+<span class="nx">pOppQuery</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">$scope</span><span class="p">.</span><span class="nx">opportunities</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">records</span><span class="p">;</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">$$phase</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">$scope</span><span class="p">.</span><span class="nx">$digest</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+
+<h1>Why is this important?</h1>
+
+<p>Angular requires you, the developer, to forcibly update the $scope using $scope.$apply, or better yet $scope.$digest whenever you consume data from an external service, such as a custom api like Salesforce / apex. The promise backed interface that ngForce exposes allows you to run the N number of queries needed to display the page, and <em>yet only update the $scope once.</em> </p>
+
+<p>Say more, How do I do that?</p>
+
+<p>You can also execute several promises and delay the execution of a singular callback to handle all of them: </p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">pQuery1</span> <span class="o">=</span> <span class="nx">vfr</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"Select Id from Account"</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">pQuery2</span> <span class="o">=</span> <span class="nx">vfr</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"Select Id from Contact"</span><span class="p">);</span>
+
+<span class="nx">$</span><span class="p">.</span><span class="nx">when</span><span class="p">(</span><span class="nx">pQuery1</span><span class="p">,</span> <span class="nx">pQuery2</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">{</span>
+    <span class="c1">//now do stuff! with both data sets</span>
+    <span class="c1">//...</span>
+    <span class="c1">//now update the scope.</span>
+    <span class="c1">//if(!$scope.$$phase) {</span>
+    <span class="c1">//  $scope.$digest();</span>
+    <span class="c1">//}</span>
+<span class="p">});</span>
+</pre></div>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/noeticpenguin/ngForce/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/noeticpenguin/ngForce/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/noeticpenguin/ngForce"></a> is maintained by <a href="https://github.com/noeticpenguin">noeticpenguin</a>.</p>
+
+          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
