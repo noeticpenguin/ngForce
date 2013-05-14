@@ -66,6 +66,14 @@ global class ngForceController {
     }
 
     @remoteAction
+    public static String describeField(String objtype, String fieldName) {
+        Schema.SObjectType token = Schema.getGlobalDescribe().get(objtype);
+        Schema.DescribeSObjectResult dr = token.getDescribe();
+        Schema.DescribeFieldResult fieldDescribe=dr.fields.getMap().get(fieldName).getDescribe();
+        return JSON.serialize(fieldDescribe);
+    }
+
+    @remoteAction
     public static String soqlFromFieldSet(String objtype, String fieldSetName) {
         Schema.SObjectType token = Schema.getGlobalDescribe().get(objtype);
         Schema.DescribeSObjectResult dr = token.getDescribe();
