@@ -175,6 +175,24 @@ angular.module('ngForce', [], function($provide) {
 
 		/*
 		 * Completely describes the individual metadata for the
+		 * specified field
+		 * @param objtype object type; e.g. "Account"
+		 * @param fieldName field name; e.g. "Phone"
+		 * @param callback function to which response will be passed
+		 * @param [error=null] function to which jqXHR will be passed in case of error
+		 */
+		vfRemote.describeField = function(objtype, fieldName, callback, error) {
+			var deferred = $.Deferred();
+			Visualforce.remoting.Manager.invokeAction('ngForceController.describeField', objtype, fieldName, function(result) {
+				handleResult(result, callback, error, false, deferred);
+			}, {
+				escape: false
+			});
+			return deferred.promise();
+		};
+
+		/*
+		 * Completely describes the individual metadata for the
 		 * specified fieldset
 		 * @param objtype object type; e.g. "Account"
 		 * @param fieldName picklist field name; e.g. "details"
