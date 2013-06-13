@@ -4,6 +4,7 @@ ngForce
 Force.com Angular.js framework.
 
 You can find the production ready version of the library under js/ngForce/
+ngForce depends on the safeApply module that you'll find in safeApply.js under js/ngForce
 
 Note: this is distributed unminified so that you can minify it with the rest of your Angular.js code
 
@@ -20,37 +21,70 @@ Once your app Module has been defined, you can include the service ngForce provi
 app.controller('oppBoxCtrl', function($scope, $dialog, vfr)
 ```
 
+Note: It probably seems strange that the module is named ngForce, but the service you're injecting is called vfr. ngForce will eventually support not only Visual Force Remoting (VFR) but also javascript ajax calls to the Rest api. The in-progress Rest service will be named, "sfRestApi". The module ngForce, however, provides both, hence the odd naming.
+
 Thereafter in the controller you can utilize the vfr service much like the $http, or $q services in Angular.
 vfr returns a promise, and therefore your controllers can have a clean(er), less call-back-hell flow to them. Additionally, because promises are binary, you can group vfr callouts and act on that data only once all of the promises have resolved. For example, here's a simple SOQL query returning records via promise:
+
+Why is this important?
+======================
+The Deferred / Promise pattern in Angular is a simplified version of the Q library by Kris Kowal (https://github.com/kriskowal/q) It provides a deferred object prototype with, as of Angular.js 1.1.5, just two methods, resolve and reject; and a singular property: promise. 
+The promise object held by the deferred object's promise property has a single method, .then() which is used to complete promises. 
+Finally, Angular provides the $q service, which provides the constructor for building deferred objects, as well as an additional two methods, .all() and .when() 
+
+Semantically, these are combined with the logic that you Defer some *work* with the *promise* to complete it, and *then* once it's complete, you act on it.
+
+Say more, How do I do that?
 
 ```javascript
 var pOppQuery = vfr.query("SELECT Id, Name, Account.Name, LeadSource, Probability, CloseDate, StageName, Amount FROM Opportunity ORDER BY CloseDate DESC");
 pOppQuery.then(function(d) {
 	$scope.opportunities = d.records;
-	if(!$scope.$$phase) {
-		$scope.$digest();
-	}
 });
 ```
 
-Why is this important?
-======================
-Angular requires you, the developer, to forcibly update the $scope using $scope.$apply, or better yet $scope.$digest whenever you consume data from an external service, such as a custom api like Salesforce / apex. The promise backed interface that ngForce exposes allows you to run the N number of queries needed to display the page, and *yet only update the $scope once.* 
+In our example above, we're calling the vfr service to make a SOQL query. This is our act of *deferring* some work -- querying Salesforce --. Vfr returns a *promise* to complete that work, which we assign to the variable pOppQuery. We call the .then() method to do some work when our promised work has been completed. 
 
-Say more, How do I do that?
+Now, if that was the extent of what you could do with Deferred / Promises it'd be a nice improvement over callback hell. However, the fun doesn't end there. If your .then() method returns a promise, you can create chains promise execution -- enforcing order execution amidst asynchronous work. Here's what that looks like:
 
-You can also execute several promises and delay the execution of a singular callback to handle all of them: 
+```javascript
+vfr.query("SELECT Id, Active__c, Site, Type, Industry, Name, AccountNumber, NumberOfEmployees FROM Account")
+		.then(function(accounts){
+			// we can manipulate the results of this first query, even assign scope variables with it
+			$scope.accounts = accounts.records;
+			var accountIds = _.pluck(accounts.records, 'Id');
+			accountIds = _.map(accountIds, function(id){ return "'" + id + "'";}).join(", ");
+			// but we must!!! return a promise, like a new ngForce method call
+			return vfr.query("SELECT Id, Name FROM Opportunity WHERE AccountId in (" + accountIds + ")");
+		}).then(function(Opps){
+			$scope.opps = Opps.records;
+			oppIds = _.pluck(Opps.records, "Id"); //shoutout to underscorejs.org!
+			oppIds = _.map(oppIds, function(id){ return "'" + id + "'";}).join(", ");
+			return vfr.query("SELECT Id, PricebookEntry.Name, Quantity, UnitPrice FROM OpportunityLineItem WHERE OpportunityId in (" + oppIds + ")");
+		}).then(function(products){
+			$scope.products = products.records;
+			return products;
+		},
+		// This last link in the chain is our error reporting link.
+		// If / When any of the above promises is rejected, or fails to resolve
+		// this method runs, and in our case logs the error.
+		function(error){
+			log(error);
+		});
+```
+
+While the above example is contrived, this pattern is extremely useful when you're creating, for instance, an object with several child objects. In the first promise you create the parent object, and in the following promise you create the first child object -- in this second promise you'll have access to the Id of the created object, etc. 
+
+Finally, at the very end of the chain, you can append an error handling function. If any of the promises are rejected the following promises will also be rejected passing the error message on to the error function.
+
+Addtionally, the $q service provides the .all() method. If you're familiar with the jQuery Deferred / Promise interface the all() method is functionally identical to the jquery $.when() method. In Angular, you utilize it this way:
+
 ```javascript
 var pQuery1 = vfr.query("Select Id from Account");
 var pQuery2 = vfr.query("Select Id from Contact");
 
-$.when(pQuery1, pQuery2).done(function{
-	//now do stuff! with both data sets
-	//...
-	//now update the scope.
-	//if(!$scope.$$phase) {
-	//	$scope.$digest();
-	//}
+$q.all(pQuery1, pQuery2).then(function{
+	// Both of these promises are guaranteed to be completed successfully.
 });
 ``` 
 
