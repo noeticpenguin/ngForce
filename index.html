@@ -1,42 +1,48 @@
 <!DOCTYPE html>
 <html>
+
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Ngforce : Force.com Angular.js framework. A better description forthwith." />
 
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <title>Ngforce by noeticpenguin</title>
+    <title>Ngforce</title>
   </head>
 
   <body>
-    <header>
-      <div class="inner">
-        <h1>Ngforce</h1>
-        <h2>Force.com Angular.js framework. A better description forthwith.</h2>
-        <a href="https://github.com/noeticpenguin/ngForce" class="button"><small>View project on</small>GitHub</a>
-      </div>
-    </header>
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
-        <section id="main-content">
-          <h1>ngForce</h1>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/noeticpenguin/ngForce">View on GitHub</a>
+
+          <h1 id="project_title">Ngforce</h1>
+          <h2 id="project_tagline">Force.com Angular.js framework. A better description forthwith.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/noeticpenguin/ngForce/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/noeticpenguin/ngForce/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="ngforce" class="anchor" href="#ngforce"><span class="octicon octicon-link"></span></a>ngForce</h1>
 
 <p>Force.com Angular.js framework.</p>
 
-<p>You can find the production ready version of the library under js/ngForce/</p>
+<p>You can find the production ready version of the library under js/ngForce/
+ngForce depends on the safeApply module that you'll find in safeApply.js under js/ngForce</p>
 
 <p>Note: this is distributed unminified so that you can minify it with the rest of your Angular.js code</p>
 
-<h1>Usage</h1>
+<h1>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h1>
 
 <p>During the creation of your application module, inject the ngForce dependcy thusly:</p>
 
@@ -48,58 +54,82 @@
 <div class="highlight"><pre><span class="nx">app</span><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">'oppBoxCtrl'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">,</span> <span class="nx">$dialog</span><span class="p">,</span> <span class="nx">vfr</span><span class="p">)</span>
 </pre></div>
 
+<p>Note: It probably seems strange that the module is named ngForce, but the service you're injecting is called vfr. ngForce will eventually support not only Visual Force Remoting (VFR) but also javascript ajax calls to the Rest api. The in-progress Rest service will be named, "sfRestApi". The module ngForce, however, provides both, hence the odd naming.</p>
+
 <p>Thereafter in the controller you can utilize the vfr service much like the $http, or $q services in Angular.
 vfr returns a promise, and therefore your controllers can have a clean(er), less call-back-hell flow to them. Additionally, because promises are binary, you can group vfr callouts and act on that data only once all of the promises have resolved. For example, here's a simple SOQL query returning records via promise:</p>
+
+<h1>
+<a name="why-is-this-important" class="anchor" href="#why-is-this-important"><span class="octicon octicon-link"></span></a>Why is this important?</h1>
+
+<p>The Deferred / Promise pattern in Angular is a simplified version of the Q library by Kris Kowal (<a href="https://github.com/kriskowal/q">https://github.com/kriskowal/q</a>) It provides a deferred object prototype with, as of Angular.js 1.1.5, just two methods, resolve and reject; and a singular property: promise. 
+The promise object held by the deferred object's promise property has a single method, .then() which is used to complete promises. 
+Finally, Angular provides the $q service, which provides the constructor for building deferred objects, as well as an additional two methods, .all() and .when() </p>
+
+<p>Semantically, these are combined with the logic that you Defer some <em>work</em> with the <em>promise</em> to complete it, and <em>then</em> once it's complete, you act on it.</p>
+
+<p>Say more, How do I do that?</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">pOppQuery</span> <span class="o">=</span> <span class="nx">vfr</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"SELECT Id, Name, Account.Name, LeadSource, Probability, CloseDate, StageName, Amount FROM Opportunity ORDER BY CloseDate DESC"</span><span class="p">);</span>
 <span class="nx">pOppQuery</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">$scope</span><span class="p">.</span><span class="nx">opportunities</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">records</span><span class="p">;</span>
-    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">$$phase</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">$scope</span><span class="p">.</span><span class="nx">$digest</span><span class="p">();</span>
-    <span class="p">}</span>
 <span class="p">});</span>
 </pre></div>
 
-<h1>Why is this important?</h1>
+<p>In our example above, we're calling the vfr service to make a SOQL query. This is our act of <em>deferring</em> some work -- querying Salesforce --. Vfr returns a <em>promise</em> to complete that work, which we assign to the variable pOppQuery. We call the .then() method to do some work when our promised work has been completed. </p>
 
-<p>Angular requires you, the developer, to forcibly update the $scope using $scope.$apply, or better yet $scope.$digest whenever you consume data from an external service, such as a custom api like Salesforce / apex. The promise backed interface that ngForce exposes allows you to run the N number of queries needed to display the page, and <em>yet only update the $scope once.</em> </p>
+<p>Now, if that was the extent of what you could do with Deferred / Promises it'd be a nice improvement over callback hell. However, the fun doesn't end there. If your .then() method returns a promise, you can create chains promise execution -- enforcing order execution amidst asynchronous work. Here's what that looks like:</p>
 
-<p>Say more, How do I do that?</p>
+<div class="highlight"><pre><span class="nx">vfr</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"SELECT Id, Active__c, Site, Type, Industry, Name, AccountNumber, NumberOfEmployees FROM Account"</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">accounts</span><span class="p">){</span>
+            <span class="c1">// we can manipulate the results of this first query, even assign scope variables with it</span>
+            <span class="nx">$scope</span><span class="p">.</span><span class="nx">accounts</span> <span class="o">=</span> <span class="nx">accounts</span><span class="p">.</span><span class="nx">records</span><span class="p">;</span>
+            <span class="kd">var</span> <span class="nx">accountIds</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">accounts</span><span class="p">.</span><span class="nx">records</span><span class="p">,</span> <span class="s1">'Id'</span><span class="p">);</span>
+            <span class="nx">accountIds</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">accountIds</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">){</span> <span class="k">return</span> <span class="s2">"'"</span> <span class="o">+</span> <span class="nx">id</span> <span class="o">+</span> <span class="s2">"'"</span><span class="p">;}).</span><span class="nx">join</span><span class="p">(</span><span class="s2">", "</span><span class="p">);</span>
+            <span class="c1">// but we must!!! return a promise, like a new ngForce method call</span>
+            <span class="k">return</span> <span class="nx">vfr</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"SELECT Id, Name FROM Opportunity WHERE AccountId in ("</span> <span class="o">+</span> <span class="nx">accountIds</span> <span class="o">+</span> <span class="s2">")"</span><span class="p">);</span>
+        <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">Opps</span><span class="p">){</span>
+            <span class="nx">$scope</span><span class="p">.</span><span class="nx">opps</span> <span class="o">=</span> <span class="nx">Opps</span><span class="p">.</span><span class="nx">records</span><span class="p">;</span>
+            <span class="nx">oppIds</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span><span class="p">(</span><span class="nx">Opps</span><span class="p">.</span><span class="nx">records</span><span class="p">,</span> <span class="s2">"Id"</span><span class="p">);</span> <span class="c1">//shoutout to underscorejs.org!</span>
+            <span class="nx">oppIds</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">oppIds</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">id</span><span class="p">){</span> <span class="k">return</span> <span class="s2">"'"</span> <span class="o">+</span> <span class="nx">id</span> <span class="o">+</span> <span class="s2">"'"</span><span class="p">;}).</span><span class="nx">join</span><span class="p">(</span><span class="s2">", "</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">vfr</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"SELECT Id, PricebookEntry.Name, Quantity, UnitPrice FROM OpportunityLineItem WHERE OpportunityId in ("</span> <span class="o">+</span> <span class="nx">oppIds</span> <span class="o">+</span> <span class="s2">")"</span><span class="p">);</span>
+        <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">products</span><span class="p">){</span>
+            <span class="nx">$scope</span><span class="p">.</span><span class="nx">products</span> <span class="o">=</span> <span class="nx">products</span><span class="p">.</span><span class="nx">records</span><span class="p">;</span>
+            <span class="k">return</span> <span class="nx">products</span><span class="p">;</span>
+        <span class="p">},</span>
+        <span class="c1">// This last link in the chain is our error reporting link.</span>
+        <span class="c1">// If / When any of the above promises is rejected, or fails to resolve</span>
+        <span class="c1">// this method runs, and in our case logs the error.</span>
+        <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">){</span>
+            <span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+        <span class="p">});</span>
+</pre></div>
 
-<p>You can also execute several promises and delay the execution of a singular callback to handle all of them: </p>
+<p>While the above example is contrived, this pattern is extremely useful when you're creating, for instance, an object with several child objects. In the first promise you create the parent object, and in the following promise you create the first child object -- in this second promise you'll have access to the Id of the created object, etc. </p>
+
+<p>Finally, at the very end of the chain, you can append an error handling function. If any of the promises are rejected the following promises will also be rejected passing the error message on to the error function.</p>
+
+<p>Addtionally, the $q service provides the .all() method. If you're familiar with the jQuery Deferred / Promise interface the all() method is functionally identical to the jquery $.when() method. In Angular, you utilize it this way:</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">pQuery1</span> <span class="o">=</span> <span class="nx">vfr</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"Select Id from Account"</span><span class="p">);</span>
 <span class="kd">var</span> <span class="nx">pQuery2</span> <span class="o">=</span> <span class="nx">vfr</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"Select Id from Contact"</span><span class="p">);</span>
 
-<span class="nx">$</span><span class="p">.</span><span class="nx">when</span><span class="p">(</span><span class="nx">pQuery1</span><span class="p">,</span> <span class="nx">pQuery2</span><span class="p">).</span><span class="nx">done</span><span class="p">(</span><span class="kd">function</span><span class="p">{</span>
-    <span class="c1">//now do stuff! with both data sets</span>
-    <span class="c1">//...</span>
-    <span class="c1">//now update the scope.</span>
-    <span class="c1">//if(!$scope.$$phase) {</span>
-    <span class="c1">//  $scope.$digest();</span>
-    <span class="c1">//}</span>
+<span class="nx">$q</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">pQuery1</span><span class="p">,</span> <span class="nx">pQuery2</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">{</span>
+    <span class="c1">// Both of these promises are guaranteed to be completed successfully.</span>
 <span class="p">});</span>
 </pre></div>
-        </section>
-
-        <aside id="sidebar">
-          <a href="https://github.com/noeticpenguin/ngForce/zipball/master" class="button">
-            <small>Download</small>
-            .zip file
-          </a>
-          <a href="https://github.com/noeticpenguin/ngForce/tarball/master" class="button">
-            <small>Download</small>
-            .tar.gz file
-          </a>
-
-          <p class="repo-owner"><a href="https://github.com/noeticpenguin/ngForce"></a> is maintained by <a href="https://github.com/noeticpenguin">noeticpenguin</a>.</p>
-
-          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.</p>
-        </aside>
-      </div>
+      </section>
     </div>
 
-            <script type="text/javascript">
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Ngforce maintained by <a href="https://github.com/noeticpenguin">noeticpenguin</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+              <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
@@ -109,6 +139,7 @@ vfr returns a promise, and therefore your controllers can have a clean(er), less
             pageTracker._trackPageview();
             } catch(err) {}
           </script>
+
 
   </body>
 </html>
