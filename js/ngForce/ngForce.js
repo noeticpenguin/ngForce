@@ -29,7 +29,7 @@ angular.module('ngForce', [], function($provide) {
 		handleResult = function(result, callback, error, nullok, deferred) {
 			if (result) {
 				result = JSON.parse(result);
-				if (Array.isArray(result) && result[0].message && result[0].errorCode) {
+				if (Object.prototype.toString.call(result) === '[object Array]' && result[0].message && result[0].errorCode) {
 					if (typeof error === 'function') {
 						error(result);
 					}
