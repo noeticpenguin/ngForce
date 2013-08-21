@@ -88,4 +88,40 @@ $q.all(pQuery1, pQuery2).then(function{
 });
 ``` 
 
+Using the helper methods
+========================
 
+ngForce provides some helper methods that are intended to make the developers life simpler. Most of these are self explanitory but a couple of them are a bit more esoteric. 
+
+Perhaps the most confusing is the bulkCreate method. You can invoke the bulk create method thusly:
+```javascript
+var pBulkCreateCall = vfr.bulkCreate('objectName__c', dataRows);
+pBulkCreateCall.then(function(results){
+	//do something awesome with results
+});
+
+// dataRows is a numerically key'd object of objects. like this:
+{
+	"0":{"propA":3,"End_date__c":"2013-08-21T11:29:27.365Z"},
+	"1":{"propA":3,"End_date__c":"2013-08-21T11:29:27.365Z"},
+	"2":{"propA":3,"End_date__c":"2013-08-21T11:29:27.365Z"},
+	"3":{"propA":3,"End_date__c":"2013-08-21T11:29:27.365Z"},
+	"4":{"propA":3,"End_date__c":"2013-08-21T11:29:27.365Z"},
+	"5":{"propA":3,"End_date__c":"2013-08-21T11:29:27.365Z"},
+	"6":{"propA":3,"End_date__c":"2013-08-21T11:29:27.365Z"},
+	"7":{"propA":3,"End_date__c":"2013-08-21T11:29:27.365Z"},
+	"8":{"propA":3,"End_date__c":"2013-08-21T11:29:27.365Z"},
+	"9":{"propA":3,"End_date__c":"2013-08-21T11:29:27.365Z"},
+	"10":{"propA":3,"End_date__c":"2013-08-21T11:29:27.365Z"},
+	"11":{"propA":3,"End_date__c":"2013-08-21T11:29:27.365Z"}
+}
+
+// I generated that with: 
+var dataRows = {};
+for(var i=0; i < 12; i++) {
+	dataRows[i] = {'propA':3, 'End_date__c': new Date()};
+}
+
+// Each of the child objects should be independently insertable via the vfr.create method -- ie: should be a json representation of the object.
+
+```
