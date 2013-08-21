@@ -122,6 +122,7 @@ for(var i=0; i < 12; i++) {
 	dataRows[i] = {'propA':3, 'End_date__c': new Date()};
 }
 
-// Each of the child objects should be independently insertable via the vfr.create method -- ie: should be a json representation of the object.
+// Each of the child objects should be independently insertable via the vfr.create method -- 
+// ie: should be a json representation of the object.
 
 ```
