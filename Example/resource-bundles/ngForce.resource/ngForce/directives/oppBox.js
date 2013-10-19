@@ -51,7 +51,7 @@ app.directive('oppBox', function(){
 		// require: 'ngModel', // Array = multiple requires, ? = optional, ^ = check parent elements
 		restrict: 'E', // E = Element, A = Attribute, C = Class, M = Comment
 		// template: '', // you can inline some html in a string here
-		templateUrl: '/apex/oppBoxTmpl', // or specify a file to use as the template for the directive
+		templateUrl: '/apex/LABJS_oppBoxTmpl', // or specify a file to use as the template for the directive
 		// replace: true, // if true, replace the contents of the containing element
 		// transclude: true, // for more information on transclude see the angular.js docs
 		// for more information on the compile function see the angular.js docs
