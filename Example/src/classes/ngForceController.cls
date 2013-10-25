@@ -1,8 +1,8 @@
-/*
+global class ngForceController{
+
+    /*
  * Modified Version of RemoteTKController
  */
-
-global class ngForceController {
 
     public class picklistValues{
         String label {get; set;}
@@ -19,7 +19,71 @@ global class ngForceController {
         String selectClause {get; set;}
         String fromClause {get; set;}
     }
-
+	
+    private static String makeError(String message, String errorCode) {
+        JSONGenerator gen = JSON.createGenerator(false);
+        gen.writeStartArray();
+        gen.writeStartObject();
+        gen.writeStringField('message', message);
+        gen.writeStringField('errorCode', errorCode);
+        gen.writeEndObject();
+        gen.writeEndArray();
+        
+        return gen.getAsString();
+    }
+    
+    private static String writeFields(String objtype, SObject obj, String fields) {
+        Map<String, Object> fieldMap = null;
+        try {
+            fieldMap = (Map<String, Object>)JSON.deserializeUntyped(fields);
+        } catch (JSONException je) {
+            return makeError(je.getMessage(), 'JSON_PARSER_ERROR');
+        }
+        
+        Schema.SObjectType targetType = Schema.getGlobalDescribe().get(objtype);
+        
+        Map<String, Schema.sObjectField> targetFields = targetType.getDescribe().fields.getMap();
+        
+        try {
+            for (String key : fieldMap.keySet()) {
+                if (targetFields.get(key) == null) {
+                    system.debug('[{"message":"Field '+key+' does not exist on object type '+objtype+'","errorCode":"INVALID_FIELD"}]');
+                    return '[{"message":"Field '+key+' does not exist on object type '+objtype+'","errorCode":"INVALID_FIELD"}]';
+                }
+                
+                Object value = fieldMap.get(key);
+                Schema.DisplayType valueType = targetFields.get(key).getDescribe().getType();
+                
+                if (value instanceof String && valueType != Schema.DisplayType.String) {
+                    // Coerce an incoming String to the correct type
+                    String svalue = (String)value;
+                    
+                    if (valueType == Schema.DisplayType.Date) {
+                        system.debug('doing ' + key + ' : ' + svalue);
+                        obj.put(key, Date.valueOf(svalue));
+                    } else if (valueType == Schema.DisplayType.Percent ||
+                           valueType == Schema.DisplayType.Currency) {
+                        obj.put(key, svalue == '' ? null : Decimal.valueOf(svalue));
+                    } else if (valueType == Schema.DisplayType.Double) {
+                        obj.put(key, svalue == '' ? null : Double.valueOf(svalue));
+                    } else if (valueType == Schema.DisplayType.Integer) {
+                        obj.put(key, Integer.valueOf(svalue));
+                    } else {
+                        obj.put(key, svalue);
+                    }
+                } else {
+                    // Just try putting the incoming value on the object
+                    obj.put(key, value);
+                }
+            }
+        } catch (SObjectException soe) {
+            system.debug(soe.getMessage() + 'INVALID_FIELD');
+            return makeError(soe.getMessage(), 'INVALID_FIELD');
+        }
+        
+        return null;
+    }
+    
     @remoteAction
     public static String describe(String objtype) {
         // Just enough to make the sample app work!
@@ -192,29 +256,10 @@ global class ngForceController {
         SObject obj = targetType.newSObject();
         
         Map<String, Object> fieldMap = null;
-        try {
-            fieldMap = (Map<String, Object>)JSON.deserializeUntyped(fields);
-        } catch (JSONException je) {
-            return '[{"message":"'+je.getMessage()+'","errorCode":"JSON_PARSER_ERROR"}]';
-        }
         
-        try {
-            for (String key : fieldMap.keySet()) {
-                if (targetFields.get(key).getDescribe().getType() == Schema.DisplayType.Date) {
-                    obj.put(key, Date.valueOf((String)fieldMap.get(key)));
-                } else if (targetFields.get(key).getDescribe().getType() == Schema.DisplayType.Percent ||
-                       targetFields.get(key).getDescribe().getType() == Schema.DisplayType.Currency) {
-                    obj.put(key, String.valueOf(fieldMap.get(key)) == '' ? null : Decimal.valueOf((String)fieldMap.get(key)));
-                } else if (targetFields.get(key).getDescribe().getType() == Schema.DisplayType.Double) {
-                    obj.put(key, String.valueOf(fieldMap.get(key)) == '' ? null : Double.valueOf(fieldMap.get(key)));
-                } else if (targetFields.get(key).getDescribe().getType() == Schema.DisplayType.Integer) {
-                    obj.put(key, Integer.valueOf(fieldMap.get(key)));
-                } else {
-                    obj.put(key, fieldMap.get(key));
-                }
-            }
-        } catch (SObjectException soe) {
-            return '[{"message":"'+soe.getMessage()+'","errorCode":"INVALID_FIELD"}]';
+        String error = writeFields(objType, obj, fields);
+        if (error != null) {
+            return error;
         }
         
         try {
@@ -249,34 +294,9 @@ global class ngForceController {
         List<sObject> objs = new List<sObject>();
 
         Map<String, Object> incomingFieldJsonObject = null;
-        try {
-            incomingFieldJsonObject = (Map<String, Object>)JSON.deserializeUntyped(fields);
-        } catch (JSONException je) {
-            return '[{"message":"'+je.getMessage()+'","errorCode":"JSON_PARSER_ERROR"}]';
-        }
-        
-        try {
-            for(String row : incomingFieldJsonObject.keySet()){
-                Map<String,Object> current = (Map<String,Object>) incomingFieldJsonObject.get(row);
-                SObject obj = targetType.newSObject();
-                for(String property : current.keySet()) {
-                    if (targetFields.get(property).getDescribe().getType() == Schema.DisplayType.Date) {
-                        obj.put(property, Date.valueOf((String)current.get(property)));
-                    } else if (targetFields.get(property).getDescribe().getType() == Schema.DisplayType.Percent ||
-                           targetFields.get(property).getDescribe().getType() == Schema.DisplayType.Currency) {
-                        obj.put(property, String.valueOf(current.get(property)) == '' ? null : Decimal.valueOf((String)current.get(property)));
-                    } else if (targetFields.get(property).getDescribe().getType() == Schema.DisplayType.Double) {
-                        obj.put(property, String.valueOf(current.get(property)) == '' ? null : Double.valueOf(current.get(property)));
-                    } else if (targetFields.get(property).getDescribe().getType() == Schema.DisplayType.Integer) {
-                        obj.put(property, Integer.valueOf(current.get(property)));
-                    } else {
-                        obj.put(property, current.get(property));
-                    }
-                }
-                objs.add(obj);
-            }
-        } catch (SObjectException soe) {
-            return '[{"message":"'+soe.getMessage()+'","errorCode":"INVALID_FIELD"}]';
+        String error = writeFields(objType, obj, fields);
+        if (error != null) {
+            return error;
         }
         
         try {
@@ -361,18 +381,10 @@ global class ngForceController {
         SObject obj = targetType.newSObject(id);
         
         Map<String, Object> fieldMap = null;
-        try {
-            fieldMap = (Map<String, Object>)JSON.deserializeUntyped(fields);
-        } catch (JSONException je) {
-            return '[{"message":"'+je.getMessage()+'","errorCode":"JSON_PARSER_ERROR"}]';
-        }
-
-        try {
-            for (String key : fieldMap.keySet()) {
-                obj.put(key, fieldMap.get(key));
-            }
-        } catch (SObjectException soe) {
-            return '[{"message":"'+soe.getMessage()+'","errorCode":"INVALID_FIELD"}]';
+        
+        String error = writeFields(objType, obj, fields);
+        if (error != null) {
+            return error;
         }
         
         try {
@@ -385,6 +397,7 @@ global class ngForceController {
                 }
                 fieldNames += '"'+field+'"';
             }
+            system.debug('[{"fields":['+fieldNames+'],"message":"'+dmle.getDmlMessage(0)+'","errorCode":"'+dmle.getDmlType(0).name()+'"}]');
             return '[{"fields":['+fieldNames+'],"message":"'+dmle.getDmlMessage(0)+'","errorCode":"'+dmle.getDmlType(0).name()+'"}]';
         }
         
@@ -444,4 +457,5 @@ global class ngForceController {
         
         return JSON.serialize(result);
     }
+
 }
