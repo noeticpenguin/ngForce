@@ -294,9 +294,34 @@ global class ngForceController{
         List<sObject> objs = new List<sObject>();
 
         Map<String, Object> incomingFieldJsonObject = null;
-        String error = writeFields(objType, obj, fields);
-        if (error != null) {
-            return error;
+        try {
+            incomingFieldJsonObject = (Map<String, Object>)JSON.deserializeUntyped(fields);
+        } catch (JSONException je) {
+            return '[{"message":"'+je.getMessage()+'","errorCode":"JSON_PARSER_ERROR"}]';
+        }
+        
+        try {
+            for(String row : incomingFieldJsonObject.keySet()){
+                Map<String,Object> current = (Map<String,Object>) incomingFieldJsonObject.get(row);
+                SObject obj = targetType.newSObject();
+                for(String property : current.keySet()) {
+                    if (targetFields.get(property).getDescribe().getType() == Schema.DisplayType.Date) {
+                        obj.put(property, Date.valueOf((String)current.get(property)));
+                    } else if (targetFields.get(property).getDescribe().getType() == Schema.DisplayType.Percent ||
+                           targetFields.get(property).getDescribe().getType() == Schema.DisplayType.Currency) {
+                        obj.put(property, String.valueOf(current.get(property)) == '' ? null : Decimal.valueOf((String)current.get(property)));
+                    } else if (targetFields.get(property).getDescribe().getType() == Schema.DisplayType.Double) {
+                        obj.put(property, String.valueOf(current.get(property)) == '' ? null : Double.valueOf(current.get(property)));
+                    } else if (targetFields.get(property).getDescribe().getType() == Schema.DisplayType.Integer) {
+                        obj.put(property, Integer.valueOf(current.get(property)));
+                    } else {
+                        obj.put(property, current.get(property));
+                    }
+                }
+                objs.add(obj);
+            }
+        } catch (SObjectException soe) {
+            return '[{"message":"'+soe.getMessage()+'","errorCode":"INVALID_FIELD"}]';
         }
         
         try {
