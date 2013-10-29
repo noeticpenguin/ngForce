@@ -6,35 +6,35 @@
 		<apex:stylesheet value="{!URLFOR($Resource.LABJS_ngForce, 'ngForce/css/bootstrap-custom.css')}"/> 
 
 <!-- Javascript -->
-		<apex:includeScript value="{!URLFOR($Resource.LABJS_ngForce, 'ngForce/js/jquery-2.0.0.min.js')}"/>
-		<apex:includeScript value="{!URLFOR($Resource.LABJS_ngForce, 'ngForce/js/angular.min.1.1.5.js')}"/>
-		<apex:includeScript value="{!URLFOR($Resource.LABJS_ngForce, 'ngForce/js/angular-ui.min.js')}"/>
-		<apex:includeScript value="{!URLFOR($Resource.LABJS_ngForce, 'ngForce/js/ui-bootstrap-tpls-0.3.0.min.js')}"/>
-		<apex:includeScript value="{!URLFOR($Resource.LABJS_ngForce, 'ngForce/js/log.min.js')}"/>
-		<apex:includeScript value="{!URLFOR($Resource.LABJS_ngForce, 'ngForce/js/select2.min.js')}"/>
-		<apex:includeScript value="{!URLFOR($Resource.LABJS_ngForce, 'ngForce/js/underscore.min.js')}"/>
+		<apex:includeScript value="{!URLFOR($Resource.ngForce, 'ngForce/js/jquery-2.0.0.min.js')}"/>
+		<apex:includeScript value="{!URLFOR($Resource.ngForce, 'ngForce/js/angular.min.1.1.5.js')}"/>
+		<apex:includeScript value="{!URLFOR($Resource.ngForce, 'ngForce/js/angular-ui.min.js')}"/>
+		<apex:includeScript value="{!URLFOR($Resource.ngForce, 'ngForce/js/ui-bootstrap-tpls-0.3.0.min.js')}"/>
+		<apex:includeScript value="{!URLFOR($Resource.ngForce, 'ngForce/js/log.min.js')}"/>
+		<apex:includeScript value="{!URLFOR($Resource.ngForce, 'ngForce/js/select2.js')}"/>
+		<apex:includeScript value="{!URLFOR($Resource.ngForce, 'ngForce/js/underscore.min.js')}"/>
 
 
 <!-- This is the ngForce module and service that provides VF Remoting access to the API -->
-		<apex:includeScript value="{!URLFOR($Resource.LABJS_ngForce, 'ngForce/services/safeApply.js')}"/>
-		<apex:includeScript value="{!URLFOR($Resource.LABJS_ngForce, 'ngForce/services/ngForce2.js')}"/>
+		<apex:includeScript value="{!URLFOR($Resource.ngForce, 'ngForce/services/safeApply.js')}"/>
+		<apex:includeScript value="{!URLFOR($Resource.ngForce, 'ngForce/services/ngForce.js')}"/>
 
 <!-- Angular Modules -->
 <!-- This includes the module that defines our application -->
-		<apex:includeScript value="{!URLFOR($Resource.LABJS_ngForce, 'ngForce/ngForceDemoApp.js')}"/>
+		<apex:includeScript value="{!URLFOR($Resource.ngForce, 'ngForce/ngForceDemoApp.js')}"/>
 
 <!-- Angular Services -->
 
 <!-- Angular Controllers -->
-		<apex:includeScript value="{!URLFOR($Resource.LABJS_ngForce, 'ngForce/controllers/oppBoxCtrl.js')}"/>
-		<apex:includeScript value="{!URLFOR($Resource.LABJS_ngForce, 'ngForce/controllers/navCtrl.js')}"/>
-		<apex:includeScript value="{!URLFOR($Resource.LABJS_ngForce, 'ngForce/controllers/oppDetailsCtrl.js')}"/>
-		<apex:includeScript value="{!URLFOR($Resource.LABJS_ngForce, 'ngForce/controllers/accountCtrl.js')}"/>
+		<apex:includeScript value="{!URLFOR($Resource.ngForce, 'ngForce/controllers/oppBoxCtrl.js')}"/>
+		<apex:includeScript value="{!URLFOR($Resource.ngForce, 'ngForce/controllers/navCtrl.js')}"/>
+		<apex:includeScript value="{!URLFOR($Resource.ngForce, 'ngForce/controllers/oppDetailsCtrl.js')}"/>
+		<apex:includeScript value="{!URLFOR($Resource.ngForce, 'ngForce/controllers/accountCtrl.js')}"/>
 
 
 <!-- Angular Directives -->
-		<apex:includeScript value="{!URLFOR($Resource.LABJS_ngForce, 'ngForce/directives/oppBox.min.js')}"/>
-		<apex:includeScript value="{!URLFOR($Resource.LABJS_ngForce, 'ngForce/directives/oppDetails.min.js')}"/>
+		<apex:includeScript value="{!URLFOR($Resource.ngForce, 'ngForce/directives/oppBox.min.js')}"/>
+		<apex:includeScript value="{!URLFOR($Resource.ngForce, 'ngForce/directives/oppDetails.min.js')}"/>
 
 <body ng-app="ngForceDemo">
 		<div class="navbar navbar-inverse navbar-fixed-top">

@@ -19,7 +19,8 @@ app.controller('oppBoxCtrl', function($scope, $dialog, vfr) {
 		$scope.filterExpr = parameters;
 	});
 
-	pOppQuery.fail(function(e){log(e);}); //if the query failes, log it.
+// TODO - fail isn't implemented
+//	pOppQuery.fail(function(e){log(e);}); //if the query failes, log it.
 
 	$scope.stageNameMap = {
 		'Prospecting' : 'label label-info',
