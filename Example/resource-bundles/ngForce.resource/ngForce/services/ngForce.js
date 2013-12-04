@@ -13,345 +13,163 @@
  *
  */
 
-angular.module('ngForce', ['Scope.safeApply'], function($provide) {
-	$provide.factory('vfr', function($q, $rootScope) {
-		var vfRemote = {};
-		/*
-		 * Large swaths of this have been lifted and modified from the RemoteTK
-		 * component provided as part of the
-		 * https://github.com/developerforce/Force.com-JavaScript-REST-Toolkit
-		 * Kudos to MetaDaddy / Pat P. for his Amazing work on this.
-		 * Additional Kudos to Cwarden for demonstrating how to convert the
-		 * callback based RemoteTk jquery calls to Promises/Deferred
-		 * based code.
-		 */
+angular.module('ngForce', ['Scope.safeApply', 'restangular']);
+angular.module('ngForce').factory('vfr', function($q, $rootScope) {
+	var vfRemote = {};
+	/*
+	 * This section of code brought to you by Kevin O'Hara. 
+	 * May I one day be half as awesome as he is.
+	 *
+	 * Kevin o'Hara released premote, a nice lib for wrapping
+	 * visualforce remoting calls in a promise interface. this 
+	 * function .send() is largely a gentle refactoring of his
+	 * work, found in "premote" here:
+	 *		https://github.com/kevinohara80/premote
+	 * such that it locks into the ng exec loop and utilizes
+	 * the angular $q service, itself based on the Q lib
+	 * Kevin uses.
+	 */
 
-		handleResult = function(result, callback, error, nullok, deferred) {
-			if (result) {
-				result = JSON.parse(result);
-				if (Array.isArray(result) && result[0].message && result[0].errorCode) {
-					if (typeof error === 'function') {
-						error(result);
-					}
-					deferred.reject(result);
-					$rootScope.$safeApply();
-				} else {
-					if (typeof callback === 'function') {
-						callback(result);
-					}
-					deferred.resolve(result);
-					$rootScope.$safeApply();
-				}
-			} else if (typeof nullok !== 'undefined' && nullok) {
-				if (typeof callback === 'function') {
-					callback();
-				}
-				deferred.resolve();
+	vfRemote.send = function(remoteAction, options, nullok) {
+		var namespace, controller, method;
+		var Manager = Visualforce.remoting.Manager;
+		var parts = remoteAction.split('.');
+
+		if (options && typeof options !== 'object') {
+			throw new Error('Options must be an object');
+		}
+
+		if (parts.length < 2) {
+			throw new Error('Invalid Remote Action specified. Use Controller.MethodName or $RemoteAction.Controller.MethodName');
+		} else {
+			if (parts.length === 3) {
+				namespace = parts[0];
+				controller = parts[1];
+				method = parts[2];
+			} else if (parts.length === 2) {
+				controller = parts[0];
+				method = parts[1];
+			}
+		}
+
+		return function() {
+			var deferred = $q.defer();
+			var args;
+
+			if (arguments.length) {
+				args = Array.prototype.slice.apply(arguments);
+			} else {
+				args = [];
+			}
+
+			args.splice(0, 0, remoteAction);
+			args.push(function(result, event) {
+				handleResultWithPromise(result, event, nullok, deferred);
+			});
+
+			if (options) {
+				args.push(options);
+			}
+
+			Manager.invokeAction.apply(Manager, args);
+			return deferred.promise;
+		};
+	};
+
+	handleResultWithPromise = function(result, event, nullok, deferred) {
+		if (result) {
+			result = JSON.parse(result);
+			if (Array.isArray(result) && result[0].message && result[0].errorCode) {
+				deferred.reject(result);
 				$rootScope.$safeApply();
 			} else {
-				var errorResult = [{
-					message: "Null return from action method",
-					"errorCode": "NULL_RETURN"
-				}];
-				if (typeof error === 'function') {
-					error(errorResult);
-				}
-				deferred.reject(errorResult);
+				deferred.resolve(result);
 				$rootScope.$safeApply();
 			}
-		};
-
-		/*
-		 * Creates a set of new records of the given type.
-		 * @param objtype object type; e.g. "Account"
-		 * @param fields an Array of objects containing initial field names and values for
-		 *               the record, e.g. [{Name: "salesforce.com", TickerSymbol:
-		 *               "CRM"}]
-		 * @param callback function to which response will be passed
-		 * @param [error=null] function to which jqXHR will be passed in case of error
-		 */
-		vfRemote.bulkCreate = function(objtype, fields, callback, error) {
-			var deferred = $q.defer();
-			Visualforce.remoting.Manager.invokeAction('ngForceController.bulkCreate', objtype, JSON.stringify(fields), function(result) {
-				handleResult(result, callback, error, false, deferred);
-			}, {
-				escape: false
+		} else if (typeof nullok !== 'undefined' && nullok) {
+			deferred.resolve();
+			$rootScope.$safeApply();
+		} else {
+			deferred.reject({
+				message: "Null returned by RemoteAction not called with nullOk flag",
+				errorCode: "NULL_RETURN"
 			});
-			return deferred.promise;
-		};
+			$rootScope.$safeApply();
+		}
+	};
 
-		/*
-		 * Return the id of a cloned object for the given sobject id.
-		 * @param id sobject id
-		 * @param callback function to which response will be passed
-		 * @param [error=null] function to which jqXHR will be passed in case of error
-		 */
-		vfRemote.clone = function(id, callback, error) {
-			var deferred = $q.defer();
-			Visualforce.remoting.Manager.invokeAction('ngForceController.sObjectKlone}',
-			id, function(result) {
-				handleResult(result, callback, error, false, deferred);
-			}, {
-				escape: false
-			});
-			return deferred.promise;
-		};
+	/*
+	 * Setup for ngForce3 style func calls
+	 */
 
-		/*
-		 * Creates a new record of the given type.
-		 * @param objtype object type; e.g. "Account"
-		 * @param fields an object containing initial field names and values for
-		 *               the record, e.g. {Name: "salesforce.com", TickerSymbol:
-		 *               "CRM"}
-		 * @param callback function to which response will be passed
-		 * @param [error=null] function to which jqXHR will be passed in case of error
-		 */
-		vfRemote.create = function(objtype, fields, callback, error) {
-			var deferred = $q.defer();
-			Visualforce.remoting.Manager.invokeAction('ngForceController.create', objtype, JSON.stringify(fields), function(result) {
-				handleResult(result, callback, error, false, deferred);
-			}, {
-				escape: false
-			});
-			return deferred.promise;
-		};
+	var standardOptions = {
+		escape: false,
+		timeout: 10000
+	};
 
-		/*
-		 * Deletes a record of the given type. Unfortunately, 'delete' is a
-		 * reserved word in JavaScript.
-		 * @param objtype object type; e.g. "Account"
-		 * @param id the record's object ID
-		 * @param callback function to which response will be passed
-		 * @param [error=null] function to which jqXHR will be passed in case of error
-		 */
-		vfRemote.del = function(objtype, id, callback, error) {
-			var deferred = $q.defer();
-			Visualforce.remoting.Manager.invokeAction('ngForceController.del', objtype, id, function(result) {
-				handleResult(result, callback, error, true, deferred);
-			}, {
-				escape: false
-			});
-			return deferred.promise;
-		};
+	// Bulk Create
+	vfRemote.bulkCreate = vfRemote.send('ngForceController.bulkCreate', standardOptions, false);
+	// Create
+	vfRemote.create = vfRemote.send('ngForceController.create', standardOptions, false);
+	// Clone
+	vfRemote.clone = vfRemote.send('ngForceController.sObjectKlone', standardOptions, false);
+	// Delete
+	vfRemote.del = vfRemote.send('ngForceController.del', standardOptions, true);
+	// Describe
+	vfRemote.describe = vfRemote.send('ngForceController.describe', standardOptions, false);
+	// Describe Field Set
+	vfRemote.describeFieldSet = vfRemote.send('ngForceController.describeFieldSet', standardOptions, false);
+	// Describe Picklist Values 
+	vfRemote.describePicklistValues = vfRemote.send('ngForceController.getPicklistValues', standardOptions, false);
+	// Get Object Type
+	vfRemote.getObjectType = vfRemote.send('ngForceController.getObjType', standardOptions, false);
+	// Get Query Results as select2 data
+	vfRemote.getQueryResultsAsSelect2Data = vfRemote.send('ngForceController.getQueryResultsAsSelect2Data', standardOptions, false);
+	// Query
+	vfRemote.query = vfRemote.send('ngForceController.query', {
+		escape: false,
+		timeout: 30000
+	}, false);
+	// Query from Fieldset
+	vfRemote.queryFromFieldset = vfRemote.send('ngForceController.queryFromFieldSet', {
+		escape: false,
+		timeout: 30000
+	}, false);
+	// Retrieve a field list for a given object.
+	vfRemote.retrieve = vfRemote.send('ngForceController.retrieve', standardOptions, false);
+	// Search (SOSL)
+	vfRemote.search = vfRemote.send('ngForceController.search', standardOptions, false);
+	// Soql from Fieldset
+	vfRemote.soqlFromFieldSet = vfRemote.send('ngForceController.soqlFromFieldSet', standardOptions, false);
+	// Update
+	vfRemote.update = vfRemote.send('ngForceController.updat', standardOptions, true);
+	// Upsert
+	vfRemote.upsert = vfRemote.send('ngForceController.upser', standardOptions, true);
 
-		/*
-		 * Completely describes the individual metadata at all levels for the
-		 * specified object.
-		 * @param objtype object type; e.g. "Account"
-		 * @param callback function to which response will be passed
-		 * @param [error=null] function to which jqXHR will be passed in case of error
-		 */
-		vfRemote.describe = function(objtype, callback, error) {
-			var deferred = $q.defer();
-			Visualforce.remoting.Manager.invokeAction('ngForceController.describe', objtype, function(result) {
-				handleResult(result, callback, error, false, deferred);
-			}, {
-				escape: false
-			});
-			return deferred.promise;
-		};
+	return vfRemote;
+});
 
-		/*
-		 * Completely describes the individual metadata for the
-		 * specified fieldset
-		 * @param objtype object type; e.g. "Account"
-		 * @param fieldSetName field set name; e.g. "details"
-		 * @param callback function to which response will be passed
-		 * @param [error=null] function to which jqXHR will be passed in case of error
-		 */
-		vfRemote.describeFieldSet = function(objtype, fieldSetName, callback, error) {
-			var deferred = $q.defer();
-			Visualforce.remoting.Manager.invokeAction('ngForceController.describeFieldSet', objtype, fieldSetName, function(result) {
-				handleResult(result, callback, error, false, deferred);
-			}, {
-				escape: false
-			});
-			return deferred.promise;
-		};
+angular.module('ngForce').factory('sfr', function($q, $rootScope, Restangular) {
+	var sfRest = {
+		model: function(modelName) {
+			return Restangular.
+			setDefaultHeaders({
+				'Authorization': 'Bearer ' + window.apiSid
+			}).
+			setBaseUrl('/services/data/v29.0/').
+			all(modelName);
+		}
+	};
+	return sfRest;
+});
 
-		/*
-		 * Completely describes the individual metadata for the
-		 * specified fieldset
-		 * @param objtype object type; e.g. "Account"
-		 * @param fieldName picklist field name; e.g. "details"
-		 * @param callback function to which response will be passed
-		 * @param [error=null] function to which jqXHR will be passed in case of error
-		 */
-		vfRemote.describePicklistValues = function(objtype, fieldName, callback, error) {
-			var deferred = $q.defer();
-			Visualforce.remoting.Manager.invokeAction('ngForceController.getPicklistValues', objtype, fieldName, function(result) {
-				handleResult(result, callback, error, false, deferred);
-			}, {
-				escape: false
-			});
-			return deferred.promise;
-		};
+angular.module('ngForce').factory('analytics', function($q, $rootScope, Restangular) {
+	var analytics = Restangular.withConfig(function(RestangularConfigurer) {
+		RestangularConfigurer.setBaseUrl('/services/data/v29.0/analytics/');
+		RestangularConfigurer.setDefaultHeaders({
+			'Authorization': 'Bearer ' + window.apiSid
+		});
+	}).all('reports');
 
-		/*
-		 * Return the sObject api name for the given sobject id.
-		 * @param id sobject id
-		 * @param callback function to which response will be passed
-		 * @param [error=null] function to which jqXHR will be passed in case of error
-		 */
-		vfRemote.getObjectType = function(id, callback, error) {
-			var deferred = $q.defer();
-			Visualforce.remoting.Manager.invokeAction('ngForceController.getObjType}',
-			id, function(result) {
-				handleResult(result, callback, error, false, deferred);
-			}, {
-				escape: false
-			});
-			return deferred.promise;
-		};
-
-		/*
-		 * Return the query results as a list of objects suitable for select2 consumption
-		 * @param soql a string containing the query to execute - e.g. "SELECT Id,
-		 *             Name from Account ORDER BY Name LIMIT 20"
-		 * @param callback function to which response will be passed
-		 * @param [error=null] function to which jqXHR will be passed in case of error
-		 */
-		vfRemote.getQueryResultsAsSelect2Data = function(soql, searchNameField, callback, error) {
-			var deferred = $q.defer();
-			Visualforce.remoting.Manager.invokeAction('ngForceController.getQueryResultsAsSelect2Data', soql, searchNameField, function(result) {
-				handleResult(result, callback, error, false, deferred);
-			}, {
-				escape: false
-			});
-			return deferred.promise;
-		};
-
-		/*
-		 * Executes the specified SOQL query.
-		 * @param soql a string containing the query to execute - e.g. "SELECT Id,
-		 *             Name from Account ORDER BY Name LIMIT 20"
-		 * @param callback function to which response will be passed
-		 * @param [error=null] function to which jqXHR will be passed in case of error
-		 */
-		vfRemote.query = function(soql, callback, error) {
-			var deferred = $q.defer();
-			Visualforce.remoting.Manager.invokeAction('ngForceController.query', soql, function(result) {
-				handleResult(result, callback, error, false, deferred);
-			}, {
-				escape: false
-			});
-			return deferred.promise;
-		};
-
-		/*
-		 * Build a query from a field set given an object id, and the fieldset name
-		 * returning the query results
-		 * @param objId ObjectId to query for fieldset and results.
-		 * @param fieldSetName field set name; e.g. "details"
-		 * @param callback function to which response will be passed
-		 * @param [error=null] function to which jqXHR will be passed in case of error
-		 */
-		vfRemote.queryFromFieldset = function(objId, fieldSetName, callback, error) {
-			var deferred = $q.defer();
-			Visualforce.remoting.Manager.invokeAction('ngForceController.queryFromFieldSet', objId, fieldSetName, function(result) {
-				handleResult(result, callback, error, false, deferred);
-			}, {
-				escape: false
-			});
-			return deferred.promise;
-		};
-
-		/*
-		 * Retrieves field values for a record of the given type.
-		 * @param objtype object type; e.g. "Account"
-		 * @param id the record's object ID
-		 * @param [fields=null] optional comma-separated list of fields for which
-		 *               to return values; e.g. Name,Industry,TickerSymbol
-		 * @param callback function to which response will be passed
-		 * @param [error=null] function to which jqXHR will be passed in case of error
-		 */
-		vfRemote.retrieve = function(objtype, id, fieldlist, callback, error) {
-			var deferred = $q.defer();
-			Visualforce.remoting.Manager.invokeAction('ngForceController.retrieve', objtype, id, fieldlist, function(result) {
-				handleResult(result, callback, error, false, deferred);
-			}, {
-				escape: false
-			});
-			return deferred.promise;
-		};
-
-		/*
-		 * Executes the specified SOSL search.
-		 * @param sosl a string containing the search to execute - e.g. "FIND
-		 *             {needle}"
-		 * @param callback function to which response will be passed
-		 * @param [error=null] function to which jqXHR will be passed in case of error
-		 */
-		vfRemote.search = function(sosl, callback, error) {
-			var deferred = $q.defer();
-			Visualforce.remoting.Manager.invokeAction('ngForceController.search', sosl, function(result) {
-				handleResult(result, callback, error, false, deferred);
-			}, {
-				escape: false
-			});
-			return deferred.promise;
-		};
-
-		/*
-		 * Build a querystring from a field set given an object type, and the fieldset name
-		 * returning a JS object containing selectClause and fromClause properties.
-		 * @param objtype object type; e.g. "Account"
-		 * @param fieldSetName field set name; e.g. "details"
-		 * @param callback function to which response will be passed
-		 * @param [error=null] function to which jqXHR will be passed in case of error
-		 */
-		vfRemote.soqlFromFieldSet = function(objtype, fieldSetName, callback, error) {
-			var deferred = $q.defer();
-			Visualforce.remoting.Manager.invokeAction('ngForceController.soqlFromFieldSet', objtype, fieldSetName, function(result) {
-				handleResult(result, callback, error, false, deferred);
-			}, {
-				escape: false
-			});
-			return deferred.promise;
-		};
-
-		/*
-		 * Updates field values on a record of the given type.
-		 * @param objtype object type; e.g. "Account"
-		 * @param id the record's object ID
-		 * @param fields an object containing initial field names and values for
-		 *               the record, e.g. {Name: "salesforce.com", TickerSymbol:
-		 *               "CRM"}
-		 * @param callback function to which response will be passed
-		 * @param [error=null] function to which jqXHR will be passed in case of error
-		 */
-		vfRemote.update = function(objtype, id, fields, callback, error) {
-			var deferred = $q.defer();
-			Visualforce.remoting.Manager.invokeAction('ngForceController.updat', objtype, id, JSON.stringify(fields), function(result) {
-				handleResult(result, callback, error, true, deferred);
-			}, {
-				escape: false
-			});
-			return deferred.promise;
-		};
-
-		/* 
-		 * Upsert - creates or updates record of the given type, based on the
-		 * given external Id.
-		 * @param objtype object type; e.g. "Account"
-		 * @param externalIdField external ID field name; e.g. "accountMaster__c"
-		 * @param externalId the record's external ID value
-		 * @param fields an object containing field names and values for
-		 *               the record, e.g. {Name: "salesforce.com", TickerSymbol:
-		 *               "CRM"}
-		 * @param callback function to which response will be passed
-		 * @param [error=null] function to which jqXHR will be passed in case of error
-		 */
-		vfRemote.upsert = function(objtype, externalIdField, externalId, fields, callback, error) {
-			var deferred = $q.defer();
-			Visualforce.remoting.Manager.invokeAction('ngForceController.upser', objtype, externalIdField, externalId, JSON.stringify(fields), function(result) {
-				handleResult(result, callback, error, true, deferred);
-			}, {
-				escape: false
-			});
-			return deferred.promise;
-		};
-
-		return vfRemote;
-	});
+	return analytics;
 });
