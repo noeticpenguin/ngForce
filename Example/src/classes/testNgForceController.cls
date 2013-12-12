@@ -305,4 +305,32 @@ public class testNgForceController{
              '"Phone" : "(444) 222-3333"');
         testDelete(id);
     }
+
+    // Test performing an update of SObjects from a JSON data array:
+    static testMethod void testBulkUpdate() {
+        Account acc1 = new Account(Name = 'Test name 1');
+        Account acc2 = new Account(Name = 'Test name 2');
+        insert new List<Account> { acc1, acc2 };
+
+        String accsJson = '[{"Id": "' + acc1.Id + '", "Name": "Test new name 1" },' +
+                '{"Id": "' + acc2.Id + '", "Name": "Test new name 2" }]';
+        System.debug(accsJson);
+
+        String res = ngForceController.bulkUpdate('Account', accsJson);
+        System.debug('Return value: ' + res);
+
+        acc1 = [
+            SELECT Id, Name
+            FROM Account
+            WHERE Id = :acc1.Id
+        ];
+        System.assertEquals('Test new name 1', acc1.Name, 'Expecting Account name to be updated');
+
+        acc2 = [
+            SELECT Id, Name
+            FROM Account
+            WHERE Id = :acc2.Id
+        ];
+        System.assertEquals('Test new name 2', acc2.Name, 'Expecting Account name to be updated');
+    } 
 }

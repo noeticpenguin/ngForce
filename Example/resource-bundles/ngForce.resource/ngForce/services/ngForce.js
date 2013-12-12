@@ -109,6 +109,8 @@ angular.module('ngForce').factory('vfr', function($q, $rootScope) {
 
 	// Bulk Create
 	vfRemote.bulkCreate = vfRemote.send('ngForceController.bulkCreate', standardOptions, false);
+    // Bulk Update 
+    vfRemote.bulkUpdate = vfRemote.send('ngForceController.bulkUpdate', standardOptions, false);
 	// Create
 	vfRemote.create = vfRemote.send('ngForceController.create', standardOptions, false);
 	// Clone
