@@ -109,6 +109,8 @@ angular.module('ngForce').factory('vfr', function($q, $rootScope) {
 
 	// Bulk Create
 	vfRemote.bulkCreate = vfRemote.send('ngForceController.bulkCreate', standardOptions, false);
+	// Bulk Update
+	vfRemote.bulkUpdate = vfRemote.send('ngForceController.bulkUpdate', standardOptions, false);
 	// Create
 	vfRemote.create = vfRemote.send('ngForceController.create', standardOptions, false);
 	// Clone
@@ -156,19 +158,37 @@ angular.module('ngForce').factory('sfr', function($q, $rootScope, Restangular) {
 			setDefaultHeaders({
 				'Authorization': 'Bearer ' + window.apiSid
 			}).
-			setBaseUrl('/services/data/v29.0/').
+			setBaseUrl('/services/data/v29.0/sobjects/').
+			setRestangularFields({
+				id: "Id"
+			}).
 			all(modelName);
 		}
 	};
 	return sfRest;
 });
 
-angular.module('ngForce').factory('analytics', function($q, $rootScope, Restangular) {
+angular.module('ngForce').factory('sfrquery', function($q, $rootScope, Restangular) {
+	var sfrquery = Restangular.withConfig(function(RestangularConfigurer) {
+		RestangularConfigurer.setBaseUrl('/services/data/v29.0/');
+		RestangularConfigurer.setDefaultHeaders({
+			'Authorization': 'Bearer ' + window.apiSid
+		});
+	}).setRestangularFields({
+		id: "Id"
+	}).all('query');
+
+	return sfrquery;
+});
+
+angular.module('ngForce').factory('sfranalytics', function($q, $rootScope, Restangular) {
 	var analytics = Restangular.withConfig(function(RestangularConfigurer) {
 		RestangularConfigurer.setBaseUrl('/services/data/v29.0/analytics/');
 		RestangularConfigurer.setDefaultHeaders({
 			'Authorization': 'Bearer ' + window.apiSid
 		});
+	}).setRestangularFields({
+		id: "Id"
 	}).all('reports');
 
 	return analytics;
