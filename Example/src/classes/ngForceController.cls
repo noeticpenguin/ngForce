@@ -68,6 +68,8 @@ global class ngForceController{
                         obj.put(key, svalue == '' ? null : Double.valueOf(svalue));
                     } else if (valueType == Schema.DisplayType.Integer) {
                         obj.put(key, Integer.valueOf(svalue));
+                    } else if (valueType == Schema.DisplayType.Base64) {
+                        obj.put(key, EncodingUtil.base64Decode(svalue.split(',')[1]));
                     } else {
                         obj.put(key, svalue);
                     }
