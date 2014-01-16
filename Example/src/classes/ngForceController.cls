@@ -36,6 +36,7 @@ global class ngForceController{
         Map<String, Object> fieldMap = null;
         try {
             fieldMap = (Map<String, Object>)JSON.deserializeUntyped(fields);
+            fieldMap.remove('attributes');
         } catch (JSONException je) {
             return makeError(je.getMessage(), 'JSON_PARSER_ERROR');
         }
