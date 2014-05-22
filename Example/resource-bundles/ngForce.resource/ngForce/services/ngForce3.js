@@ -253,7 +253,7 @@ angular.module('ngForce', ['Scope.safeApply', 'restangular'])
         }
 
         // Remove fields we can't update.
-        var propsToIgnore = ['Id', 'Name', 'LastReferencedDate', 'LastModifiedById',
+        var propsToIgnore = ['Id', 'LastReferencedDate', 'LastModifiedById',
           'LastModifiedDate', 'LastViewedDate', 'SystemModstamp',
           'CreatedById', 'CreatedDate', 'IsDeleted'
         ];
