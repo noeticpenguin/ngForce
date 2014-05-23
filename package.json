@@ -1,0 +1,48 @@
+{
+  "name": "ngForce",
+  "version": "1.0.0",
+  "description": "Angular.js integration library for Salesforce.com",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "grunt": "~0.4.2",
+    "grunt-cli": "~0.1.13",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-copy": "~0.5.0",
+    "grunt-contrib-cssmin": "~0.7.0",
+    "grunt-contrib-jasmine": "~0.6.1",
+    "grunt-contrib-less": "~0.9.0",
+    "grunt-env": "~0.4.1",
+    "grunt-template-jasmine-istanbul": "~0.3.0",
+    "load-grunt-tasks": "~0.3.0"
+  },
+  "devDependencies": {
+    "grunt-template-jasmine-istanbul": "~0.3.0",
+    "grunt-ant-sfdc": "~0.2.2",
+    "grunt-available-tasks": "~0.4.5",
+    "grunt-contrib-compress": "~0.8.0",
+    "grunt-prompt": "~1.1.0",
+    "grunt": "^0.4.5",
+    "grunt-cli": "^0.1.13",
+    "grunt-ngmin": "0.0.3",
+    "grunt-contrib-uglify": "^0.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/noeticpenguin/ngForce.git"
+  },
+  "keywords": [
+    "Salesforce",
+    "Angular",
+    "VisualForce",
+    "Apex"
+  ],
+  "author": "Kevin Poorman, Alex Berg, Luke McFarland, Others",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/noeticpenguin/ngForce/issues"
+  },
+  "homepage": "https://github.com/noeticpenguin/ngForce"
+}
