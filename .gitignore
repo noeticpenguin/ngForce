@@ -1,0 +1,4 @@
+.grunt
+.DS_Store
+bin
+node_modules
