@@ -1,3 +1,0 @@
-<apex:page showHeader="false" sidebar="false" standardController="Opportunity">
-    <apex:detail inlineEdit="true"/>
-</apex:page>
