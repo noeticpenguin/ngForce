@@ -1,0 +1,12 @@
+<apex:component controller="ngForceController">
+
+<script>
+	window.apiSid = '{!$Api.Session_ID}';
+</script>
+
+<!-- 
+    This component is intentionally blank and is used soley to enforce the
+    inclusion of vf remoting capabilities within including page. Ie: 
+    force the inclusion of Salesforces VfRemote.js
+ -->
+</apex:component>
