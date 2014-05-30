@@ -353,9 +353,48 @@ global class ngForceController {
 		return JSON.serialize(result);
 	}
 
+	/**
+	 * Perform a bulk update operation for a JSON array of SObjects.
+	 * @param  objtype    SObject name e.g. "Account"
+	 * @param  jsonObjArr Array of SObject field data that should include the ID
+	 * @return JSON array of the records that have successfully been updated.
+	 */
+	@remoteAction public static String bulkUpdate(String objtype, String jsonObjArr) {
+		Type listType = Type.forName('List<' + objType + '>');
+		if (listType == null) {
+			return makeError('The requested resource does not exist', 'NOT_FOUND');
+		}
+
+		List<SObject> objs;
+		try {
+			objs = (List<SObject>)JSON.deserialize(jsonObjArr, listType);
+		} catch (JSONException je) {
+			return makeError('Unable to deserialize the JSON data array', 'INVALID_JSON');
+		}
+
+		try {
+			update objs;
+		} catch (DMLException dmle) {
+			return '[{"data":' + jsonObjArr +
+			       ',"message":"' + dmle.getDmlMessage(0) +
+			       '","errorCode":"' + dmle.getDmlType(0).name() + '"}]';
+		}
+
+		List<Id> rids = new List<Id>();
+		for (sObject o : objs) {
+			rids.add(o.Id);
+		}
+
+		Map<String, Object> result = new Map<String, Object>();
+		result.put('id', rids);
+		result.put('errors', new List<String>());
+		result.put('success', true);
+
+		return JSON.serialize(result);
+	}
+
 	@remoteAction
 	public static String retrieve(String objtype, String id, String fieldlist) {
-		// TODO - handle null fieldlist - retrieve all fields
 		Boolean containsId = false;
 		for (String field : fieldlist.split(',')) {
 			if (field.equalsIgnoreCase('id')) {
