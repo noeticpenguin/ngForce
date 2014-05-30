@@ -89,7 +89,6 @@ module.exports = function(grunt) {
 			options: {
 				version: '29.0',
 				root: 'deployTmp/src/',
-				// existingPackage: true
 			},
 			automated: {
 				options: {
@@ -147,7 +146,24 @@ module.exports = function(grunt) {
 						config: 'antdeploy.test.options.token', // arbitray name or config for any other grunt task
 						type: 'password', // list, checkbox, confirm, input, password
 						message: "Enter Security Token: ", // Question to ask the user, function needs to return a string,
-					}, ]
+					}],
+					then: function(ans) {
+						grunt.config.merge({
+							antdeploy: {
+								prod: {
+									options: {
+										user: grunt.config.get('antdeploy.test.options.user'),
+										pass: grunt.config.get('antdeploy.test.options.pass'),
+										token: grunt.config.get('antdeploy.test.options.token')
+									}
+								}
+							}
+						});
+						// grunt.config.set(antdeploy.prod.options.user, antdeploy.test.options.user);
+						// grunt.config.set(antdeploy.prod.options.pass, antdeploy.test.options.pass);
+						// grunt.config.set(antdeploy.prod.options.token, antdeploy.test.options.token);
+
+					}
 				}
 			},
 		},
