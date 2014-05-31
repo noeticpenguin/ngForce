@@ -15,9 +15,9 @@
  * 
  */
 angular.module('ngForce')
-  .provider('remoteObjects', ['$q','$log',
-  function ($q, $log) {
-    this.$get = function () {
+  .provider('remoteObjects', [
+  function () {
+    this.$get = function ($q, $rootScope) {
       // default namespace
       var namespace = "SObjectModel";
       // app.config setter for the namespace.
