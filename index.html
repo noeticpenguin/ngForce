@@ -1,39 +1,32 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-
   <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Ngforce : Force.com Angular.js framework. A better description forthwith." />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Ngforce by noeticpenguin</title>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-    <title>Ngforce</title>
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
-
   <body>
-
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/noeticpenguin/ngForce">View on GitHub</a>
-          <h1 id="project_title">Ngforce</h1>
-          <h2 id="project_tagline">Force.com Angular.js framework. A better description forthwith.</h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/noeticpenguin/ngForce/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/noeticpenguin/ngForce/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-      <div id="logo" style="width:128px; height=128px;">
-        <img src="https://raw.github.com/noeticpenguin/ngForce/master/images/logo_128x128.png" width="128" height="128">
-      </div>
-
+    <div class="wrapper">
+      <header>
+        <h1>Ngforce</h1>
+        <p>Force.com Angular.js framework. A better description forthwith.</p>
+        <p class="view"><a href="https://github.com/noeticpenguin/ngForce">View the Project on GitHub <small>noeticpenguin/ngForce</small></a></p>
+        <ul>
+          <li><a href="https://github.com/noeticpenguin/ngForce/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/noeticpenguin/ngForce/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/noeticpenguin/ngForce">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
         <h1>
 <a name="ngforce" class="anchor" href="#ngforce"><span class="octicon octicon-link"></span></a>ngForce</h1>
 
@@ -49,12 +42,12 @@ ngForce depends on the safeApply module that you'll find in safeApply.js under j
 
 <p>During the creation of your application module, inject the ngForce dependcy thusly:</p>
 
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">'ngForceDemo'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'ui.bootstrap'</span><span class="p">,</span> <span class="s1">'ui'</span><span class="p">,</span> <span class="s1">'ngForce'</span><span class="p">]);</span>
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">'ngForceDemo'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'ui.bootstrap'</span><span class="p">,</span> <span class="s1">'ui'</span><span class="p">,</span> <span class="s1">'ngForce'</span><span class="p">]);</span>
 </pre></div>
 
 <p>Once your app Module has been defined, you can include the service ngForce provides, 'vfr' in any of your controllers by adding it to the dependency injection list like this:</p>
 
-<div class="highlight"><pre><span class="nx">app</span><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">'oppBoxCtrl'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">,</span> <span class="nx">$dialog</span><span class="p">,</span> <span class="nx">vfr</span><span class="p">)</span>
+<div class="highlight highlight-javascript"><pre><span class="nx">app</span><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">'oppBoxCtrl'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">,</span> <span class="nx">$dialog</span><span class="p">,</span> <span class="nx">vfr</span><span class="p">)</span>
 </pre></div>
 
 <p>Note: It probably seems strange that the module is named ngForce, but the service you're injecting is called vfr. ngForce will eventually support not only Visual Force Remoting (VFR) but also javascript ajax calls to the Rest api. The in-progress Rest service will be named, "sfRestApi". The module ngForce, however, provides both, hence the odd naming.</p>
@@ -73,7 +66,7 @@ Finally, Angular provides the $q service, which provides the constructor for bui
 
 <p>Say more, How do I do that?</p>
 
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">pOppQuery</span> <span class="o">=</span> <span class="nx">vfr</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"SELECT Id, Name, Account.Name, LeadSource, Probability, CloseDate, StageName, Amount FROM Opportunity ORDER BY CloseDate DESC"</span><span class="p">);</span>
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">pOppQuery</span> <span class="o">=</span> <span class="nx">vfr</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"SELECT Id, Name, Account.Name, LeadSource, Probability, CloseDate, StageName, Amount FROM Opportunity ORDER BY CloseDate DESC"</span><span class="p">);</span>
 <span class="nx">pOppQuery</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">$scope</span><span class="p">.</span><span class="nx">opportunities</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">records</span><span class="p">;</span>
 <span class="p">});</span>
@@ -83,7 +76,7 @@ Finally, Angular provides the $q service, which provides the constructor for bui
 
 <p>Now, if that was the extent of what you could do with Deferred / Promises it'd be a nice improvement over callback hell. However, the fun doesn't end there. If your .then() method returns a promise, you can create chains promise execution -- enforcing order execution amidst asynchronous work. Here's what that looks like:</p>
 
-<div class="highlight"><pre><span class="nx">vfr</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"SELECT Id, Active__c, Site, Type, Industry, Name, AccountNumber, NumberOfEmployees FROM Account"</span><span class="p">)</span>
+<div class="highlight highlight-javascript"><pre><span class="nx">vfr</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"SELECT Id, Active__c, Site, Type, Industry, Name, AccountNumber, NumberOfEmployees FROM Account"</span><span class="p">)</span>
         <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">accounts</span><span class="p">){</span>
             <span class="c1">// we can manipulate the results of this first query, even assign scope variables with it</span>
             <span class="nx">$scope</span><span class="p">.</span><span class="nx">accounts</span> <span class="o">=</span> <span class="nx">accounts</span><span class="p">.</span><span class="nx">records</span><span class="p">;</span>
@@ -114,24 +107,59 @@ Finally, Angular provides the $q service, which provides the constructor for bui
 
 <p>Addtionally, the $q service provides the .all() method. If you're familiar with the jQuery Deferred / Promise interface the all() method is functionally identical to the jquery $.when() method. In Angular, you utilize it this way:</p>
 
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">pQuery1</span> <span class="o">=</span> <span class="nx">vfr</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"Select Id from Account"</span><span class="p">);</span>
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">pQuery1</span> <span class="o">=</span> <span class="nx">vfr</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"Select Id from Account"</span><span class="p">);</span>
 <span class="kd">var</span> <span class="nx">pQuery2</span> <span class="o">=</span> <span class="nx">vfr</span><span class="p">.</span><span class="nx">query</span><span class="p">(</span><span class="s2">"Select Id from Contact"</span><span class="p">);</span>
 
 <span class="nx">$q</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">pQuery1</span><span class="p">,</span> <span class="nx">pQuery2</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">{</span>
     <span class="c1">// Both of these promises are guaranteed to be completed successfully.</span>
 <span class="p">});</span>
 </pre></div>
+
+<h1>
+<a name="using-the-helper-methods" class="anchor" href="#using-the-helper-methods"><span class="octicon octicon-link"></span></a>Using the helper methods</h1>
+
+<p>ngForce provides some helper methods that are intended to make the developers life simpler. Most of these are self explanitory but a couple of them are a bit more esoteric. </p>
+
+<p>Perhaps the most confusing is the bulkCreate method. You can invoke the bulk create method thusly:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">pBulkCreateCall</span> <span class="o">=</span> <span class="nx">vfr</span><span class="p">.</span><span class="nx">bulkCreate</span><span class="p">(</span><span class="s1">'objectName__c'</span><span class="p">,</span> <span class="nx">dataRows</span><span class="p">);</span>
+<span class="nx">pBulkCreateCall</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">results</span><span class="p">){</span>
+    <span class="c1">//do something awesome with results</span>
+<span class="p">});</span>
+
+<span class="c1">// dataRows is a numerically key'd object of objects. like this:</span>
+<span class="p">{</span>
+    <span class="s2">"0"</span><span class="o">:</span><span class="p">{</span><span class="s2">"propA"</span><span class="o">:</span><span class="mi">3</span><span class="p">,</span><span class="s2">"End_date__c"</span><span class="o">:</span><span class="s2">"2013-08-21T11:29:27.365Z"</span><span class="p">},</span>
+    <span class="s2">"1"</span><span class="o">:</span><span class="p">{</span><span class="s2">"propA"</span><span class="o">:</span><span class="mi">3</span><span class="p">,</span><span class="s2">"End_date__c"</span><span class="o">:</span><span class="s2">"2013-08-21T11:29:27.365Z"</span><span class="p">},</span>
+    <span class="s2">"2"</span><span class="o">:</span><span class="p">{</span><span class="s2">"propA"</span><span class="o">:</span><span class="mi">3</span><span class="p">,</span><span class="s2">"End_date__c"</span><span class="o">:</span><span class="s2">"2013-08-21T11:29:27.365Z"</span><span class="p">},</span>
+    <span class="s2">"3"</span><span class="o">:</span><span class="p">{</span><span class="s2">"propA"</span><span class="o">:</span><span class="mi">3</span><span class="p">,</span><span class="s2">"End_date__c"</span><span class="o">:</span><span class="s2">"2013-08-21T11:29:27.365Z"</span><span class="p">},</span>
+    <span class="s2">"4"</span><span class="o">:</span><span class="p">{</span><span class="s2">"propA"</span><span class="o">:</span><span class="mi">3</span><span class="p">,</span><span class="s2">"End_date__c"</span><span class="o">:</span><span class="s2">"2013-08-21T11:29:27.365Z"</span><span class="p">},</span>
+    <span class="s2">"5"</span><span class="o">:</span><span class="p">{</span><span class="s2">"propA"</span><span class="o">:</span><span class="mi">3</span><span class="p">,</span><span class="s2">"End_date__c"</span><span class="o">:</span><span class="s2">"2013-08-21T11:29:27.365Z"</span><span class="p">},</span>
+    <span class="s2">"6"</span><span class="o">:</span><span class="p">{</span><span class="s2">"propA"</span><span class="o">:</span><span class="mi">3</span><span class="p">,</span><span class="s2">"End_date__c"</span><span class="o">:</span><span class="s2">"2013-08-21T11:29:27.365Z"</span><span class="p">},</span>
+    <span class="s2">"7"</span><span class="o">:</span><span class="p">{</span><span class="s2">"propA"</span><span class="o">:</span><span class="mi">3</span><span class="p">,</span><span class="s2">"End_date__c"</span><span class="o">:</span><span class="s2">"2013-08-21T11:29:27.365Z"</span><span class="p">},</span>
+    <span class="s2">"8"</span><span class="o">:</span><span class="p">{</span><span class="s2">"propA"</span><span class="o">:</span><span class="mi">3</span><span class="p">,</span><span class="s2">"End_date__c"</span><span class="o">:</span><span class="s2">"2013-08-21T11:29:27.365Z"</span><span class="p">},</span>
+    <span class="s2">"9"</span><span class="o">:</span><span class="p">{</span><span class="s2">"propA"</span><span class="o">:</span><span class="mi">3</span><span class="p">,</span><span class="s2">"End_date__c"</span><span class="o">:</span><span class="s2">"2013-08-21T11:29:27.365Z"</span><span class="p">},</span>
+    <span class="s2">"10"</span><span class="o">:</span><span class="p">{</span><span class="s2">"propA"</span><span class="o">:</span><span class="mi">3</span><span class="p">,</span><span class="s2">"End_date__c"</span><span class="o">:</span><span class="s2">"2013-08-21T11:29:27.365Z"</span><span class="p">},</span>
+    <span class="s2">"11"</span><span class="o">:</span><span class="p">{</span><span class="s2">"propA"</span><span class="o">:</span><span class="mi">3</span><span class="p">,</span><span class="s2">"End_date__c"</span><span class="o">:</span><span class="s2">"2013-08-21T11:29:27.365Z"</span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// I generated that with: </span>
+<span class="kd">var</span> <span class="nx">dataRows</span> <span class="o">=</span> <span class="p">{};</span>
+<span class="k">for</span><span class="p">(</span><span class="kd">var</span> <span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">12</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">dataRows</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'propA'</span><span class="o">:</span><span class="mi">3</span><span class="p">,</span> <span class="s1">'End_date__c'</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">()};</span>
+<span class="p">}</span>
+
+<span class="c1">// Each of the child objects should be independently insertable via the vfr.create method -- </span>
+<span class="c1">// ie: should be a json representation of the object.</span>
+
+</pre></div>
       </section>
     </div>
-
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Ngforce maintained by <a href="https://github.com/noeticpenguin">noeticpenguin</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
-
+    <footer>
+      <p>Project maintained by <a href="https://github.com/noeticpenguin">noeticpenguin</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
               <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
@@ -142,7 +170,6 @@ Finally, Angular provides the $q service, which provides the constructor for bui
             pageTracker._trackPageview();
             } catch(err) {}
           </script>
-
 
   </body>
 </html>
