@@ -1,9 +1,9 @@
 <apex:page docType="html-5.0" showHeader="false" standardstylesheets="false" sidebar="false" standardController="Opportunity">
 
 <!-- Css -->
-    <apex:stylesheet value="{!URLFOR($Resource.LABJS_Bootstrap, 'bootstrap231/css/bootstrap.min.css')}"/>
-    <apex:stylesheet value="{!URLFOR($Resource.LABJS_Bootstrap, 'bootstrap231/css/bootstrap-responsive.min.css')}"/>  
-    <apex:stylesheet value="{!URLFOR($Resource.LABJS_ngForce, 'ngForce/css/bootstrap-custom.css')}"/> 
+    <apex:stylesheet value="{!URLFOR($Resource.Bootstrap, 'bootstrap231/css/bootstrap.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.Bootstrap, 'bootstrap231/css/bootstrap-responsive.min.css')}"/>  
+    <apex:stylesheet value="{!URLFOR($Resource.ngForce, 'ngForce/css/bootstrap-custom.css')}"/> 
 
 <!-- Javascript -->
     <apex:includeScript value="{!URLFOR($Resource.ngForce, 'ngForce/js/jquery-2.0.0.min.js')}"/>
@@ -80,7 +80,7 @@
         
         <hr></hr>
         <footer>
-            <c:LABJS_ngforce />
+            <c:ngforce />
             <p><a href="http://www.codefriar.com">© Ignoti et Quasi Oculti Declaravimus - 2013</a></p>
         </footer>
         

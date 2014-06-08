@@ -1,5 +1,5 @@
 /*
- * ngForce - a visualForce remoting based Angular.js service for developing
+ * ngForce - an Angular.js service for developing
  * Angular apps within Visualforce.
  *
  * Copyright (c)2013, Kevin Pooorman & Alex Berg
