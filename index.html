@@ -30,19 +30,128 @@
         <h1>
 <a name="ngforce" class="anchor" href="#ngforce"><span class="octicon octicon-link"></span></a>ngForce</h1>
 
-<p>Force.com Angular.js framework.</p>
+<h1>
+<a name="forcecom-angularjs-framework" class="anchor" href="#forcecom-angularjs-framework"><span class="octicon octicon-link"></span></a>Force.com Angular.js framework.</h1>
 
-<p>You can find the production ready version of the library under js/ngForce/
-ngForce depends on the safeApply module that you'll find in safeApply.js under js/ngForce</p>
+<p>ngForce is a set of Angular.js modules that facilitate quick and sustainable Angular.js application development on the Force.com Platform. With the Angular.js modules are a set of Apex classes facilitating Visualforce Remoting. </p>
 
-<p>Note: this is distributed unminified so that you can minify it with the rest of your Angular.js code</p>
+<h2>
+<a name="architectural-overview" class="anchor" href="#architectural-overview"><span class="octicon octicon-link"></span></a>Architectural Overview.</h2>
+
+<p>ngForce is composed of a number of independent modules that are normally comiled/minified into a single .min.js file for use. However, advanced developers can adopt singular modules from the jsSrc directory, so long as the underlying requirements for ngForce are met:</p>
+
+<ol>
+<li>Lo-Dash.js (or Underscore, but Lo-Dash is significantly faster)</li>
+<li>safeApply.js - An Angular module in it's own right, this module provides a fire and forget method of syncing external data retreival with the Angular Run loop.</li>
+<li>The sfr* services all require Restangular.js, an Angular.js module for better integration with mostly restful apis.</li>
+</ol><h1>
+<a name="services-overview" class="anchor" href="#services-overview"><span class="octicon octicon-link"></span></a>Services Overview.</h1>
+
+<h2>
+<a name="jssrcngforce-visualforceremotingjs" class="anchor" href="#jssrcngforce-visualforceremotingjs"><span class="octicon octicon-link"></span></a>/jsSrc/ngForce-visualForceRemoting.js</h2>
+
+<p>This service provides methods for interacting with the force.com platform without burning API calls. It does this by providing both a generic Angular-ized wrapper for <em>Any visualforce remoting annotated method</em> in your org, as well as a set of pre-wired convienence methods from the acompanying ngForceController.cls. These largely handle CRUD, Bulk Create and Update as well as manipulation of fieldsets. </p>
+
+<h3>
+<a name="methods-of-note" class="anchor" href="#methods-of-note"><span class="octicon octicon-link"></span></a>Methods of Note:</h3>
+
+<p>vfr.send() - Send gives you the ability to on-demand generate a function that make a JSRemoting call to any @remoteAction annotated method in your org. This method accepts a fully qualified &amp;&amp; namespaced method name specifying the remoteAction method to invoke as well as an Options hash and a boolean parameter determining if the remoteAction method is allowed to return a null response object. (for instance, delete.) <em>This method returns a function that, when invoked, makes a promised based visualforce remoting call</em> Using .send() you can:</p>
+
+<div class="highlight highlight-javascript"><pre>    <span class="kd">var</span> <span class="nx">makeChatterPost</span> <span class="o">=</span> <span class="nx">vfr</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s1">'Example.Controller.Method'</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span> 
+</pre></div>
+
+<p>once in your service, controller or app definition. Then you can call the method </p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">makeChatterPost</span><span class="p">(</span><span class="s2">"foo bar baz!"</span><span class="p">);</span>
+</pre></div>
+
+<p>to trigger the VisualForce Remoting call. 
+There are a number of convience methods pre-wired into the vfr module such as: </p>
+
+<ul>
+<li>bulkCreate</li>
+<li>bulkUpdate</li>
+<li>create</li>
+<li>clone</li>
+<li>del</li>
+<li>describe</li>
+<li>describeFieldSet</li>
+<li>describePicklistValues</li>
+<li>getObjectType</li>
+<li>getQueryResultsAsSelect2Data</li>
+<li>query</li>
+<li>queryFromFieldset</li>
+<li>retrieve</li>
+<li>search</li>
+<li>soqlFromFieldSet</li>
+<li>update</li>
+<li>upsert</li>
+</ul><p><strong>Please note, This is a provider and as such, you can override the default "standardOptions" used by .send() and consequently by the convience methods in your app.setup method.</strong></p>
+
+<h2>
+<a name="jssrcngforce-sftemplatejs" class="anchor" href="#jssrcngforce-sftemplatejs"><span class="octicon octicon-link"></span></a>/jsSrc/ngForce-sfTemplate.js</h2>
+
+<p>This service provides methods for optimizing and "pre-building" Angular views from Visualforce .pages in your org. Salesforce, (as of Spring 14) still injects a number of javascript tags into the .HTML that the Visualforce engine generates. Some of these .js files are not well optimized for compositing complex views from partial templates. While loading any given single partial has a negligable impact on application speed from these scripts, compositing a page out of 15 partials <em>does</em>. This service, in conjunction with the AngularTemplateCache service, provides a way to pre-fetch the view, strip the extra .js include tags and push the HTML into the $TemplateCache. There is a noticable improvement in application load times using this. </p>
+
+<ul>
+<li>This Method is also a provider, and allows you to reset the standard regex blacklist in the app.setup method. *
+###Methods of Note:
+fromVf() - This method requests the template from Salesforce and utilizes the preset blacklist regex and strips offending js include statements from the fetched templates before inserting the template into the cache.</li>
+</ul><h2>
+<a name="jssrcngforce-sfrquery" class="anchor" href="#jssrcngforce-sfrquery"><span class="octicon octicon-link"></span></a>/jsSrc/ngForce-sfrQuery</h2>
+
+<p>This service is <em>the</em> service by which one queries records in Salesforce via the <em>rest</em> api. It is entirely promise based and will as soon as the request has been <em>sent</em> to Salesforce. </p>
+
+<h3>
+<a name="methods-of-note-1" class="anchor" href="#methods-of-note-1"><span class="octicon octicon-link"></span></a>Methods of Note:</h3>
+
+<p>Query() - the query method accepts a string representation of a <em>soql</em> query. This query is handed - as is - to Salesforce only manipulating the string to ensure url-encodedness. Depending on the Query itself, the result will usually be an object of objects representing the resulting rows from Salesforce. Each of the rows returned is, itself a fully activated objects with the ability to call Update() etc.</p>
+
+<p>QueryAll() - This method is a double edged sword. If you need to have more than 2k records returned, this is the easiest method to do so. On the other hand, without an intentional Upper boundry in the query string itself, you can easily pull down 28k records. This will run your user's box out of memory, freeze their browser and in all likelyhood run you out of API calls if multiple people are using the service. <em>use wisely</em></p>
+
+<h2>
+<a name="jssrcngforce-sfrbackend" class="anchor" href="#jssrcngforce-sfrbackend"><span class="octicon octicon-link"></span></a>/jsSrc/ngForce-sfrBackend</h2>
+
+<p>This service facilitates testing by providing custom expectations, mocks and testing utilities. </p>
+
+<h2>
+<a name="jssrcngforce-sfranalyticsjs" class="anchor" href="#jssrcngforce-sfranalyticsjs"><span class="octicon octicon-link"></span></a>/jsSrc/ngForce-sfrAnalytics.js</h2>
+
+<p>This service provides access to the Analytics Rest Api. </p>
+
+<h3>
+<a name="feel-free-to-submit-pull-requests-with-more-documentation-on-this-one" class="anchor" href="#feel-free-to-submit-pull-requests-with-more-documentation-on-this-one"><span class="octicon octicon-link"></span></a>Feel free to submit pull requests with more documentation on this one.</h3>
+
+<h2>
+<a name="jssrcngforce-sfrjs" class="anchor" href="#jssrcngforce-sfrjs"><span class="octicon octicon-link"></span></a>/jsSrc/ngForce-sfr.js</h2>
+
+<p>This is the main <em>rest</em> api service. It provides four main methods:</p>
+
+<ol>
+<li>Model: this method returns a restangular object configured
+for crud operations via the standard .post .get etc. methods 
+of restanglar. </li>
+<li>Insert: A convience method, for ... inserting records.</li>
+<li>Update: A convience method, for ... updating records.</li>
+<li>Delete: a convience method, for ... deleting records.</li>
+</ol><p>What's important to know about the SFR service is that your queried object results return as a collection of SFR service enabled objects. Given a result set, each record has, for instance, an update() method.</p>
+
+<h2>
+<a name="jssrcngforce-remoteobjectsjs" class="anchor" href="#jssrcngforce-remoteobjectsjs"><span class="octicon octicon-link"></span></a>/jsSrc/ngForce-remoteObjects.js</h2>
+
+<p>This service exposes a factory for building Remote Object methods. This is the newest service and as such has had the least amount of real-world testing. </p>
+
+<h2>
+<a name="jssrcngforce-encodeuriqueryjs" class="anchor" href="#jssrcngforce-encodeuriqueryjs"><span class="octicon octicon-link"></span></a>/jsSrc/ngForce-encodeUriQuery.js</h2>
+
+<p>This service is used internally by the sfrBackground service to enable better testing.</p>
 
 <h1>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h1>
 
 <p>During the creation of your application module, inject the ngForce dependcy thusly:</p>
 
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">'ngForceDemo'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'ui.bootstrap'</span><span class="p">,</span> <span class="s1">'ui'</span><span class="p">,</span> <span class="s1">'ngForce'</span><span class="p">]);</span>
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="nx">angular</span><span class="p">.</span><span class="nx">module</span><span class="p">(</span><span class="s1">'myAwesomeAngularOnSalesforceApp'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'ngForce'</span><span class="p">]);</span>
 </pre></div>
 
 <p>Once your app Module has been defined, you can include the service ngForce provides, 'vfr' in any of your controllers by adding it to the dependency injection list like this:</p>
@@ -50,10 +159,8 @@ ngForce depends on the safeApply module that you'll find in safeApply.js under j
 <div class="highlight highlight-javascript"><pre><span class="nx">app</span><span class="p">.</span><span class="nx">controller</span><span class="p">(</span><span class="s1">'oppBoxCtrl'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">$scope</span><span class="p">,</span> <span class="nx">$dialog</span><span class="p">,</span> <span class="nx">vfr</span><span class="p">)</span>
 </pre></div>
 
-<p>Note: It probably seems strange that the module is named ngForce, but the service you're injecting is called vfr. ngForce will eventually support not only Visual Force Remoting (VFR) but also javascript ajax calls to the Rest api. The in-progress Rest service will be named, "sfRestApi". The module ngForce, however, provides both, hence the odd naming.</p>
-
-<p>Thereafter in the controller you can utilize the vfr service much like the $http, or $q services in Angular.
-vfr returns a promise, and therefore your controllers can have a clean(er), less call-back-hell flow to them. Additionally, because promises are binary, you can group vfr callouts and act on that data only once all of the promises have resolved. For example, here's a simple SOQL query returning records via promise:</p>
+<p>Thereafter in the controller you can utilize the ngForce services much like the $http, or $q services in Angular.
+vfr, sfr, sfrquery and all the others return promises, and therefore your services can have a clean(er), less call-back-hell flow to them. </p>
 
 <h1>
 <a name="why-is-this-important" class="anchor" href="#why-is-this-important"><span class="octicon octicon-link"></span></a>Why is this important?</h1>
@@ -101,7 +208,7 @@ Finally, Angular provides the $q service, which provides the constructor for bui
         <span class="p">});</span>
 </pre></div>
 
-<p>While the above example is contrived, this pattern is extremely useful when you're creating, for instance, an object with several child objects. In the first promise you create the parent object, and in the following promise you create the first child object -- in this second promise you'll have access to the Id of the created object, etc. </p>
+<p>This pattern is extremely useful when you're creating, for instance, an object with several child objects. In the first promise you create the parent object, and in the following promise you create the first child object -- in this second promise you'll have access to the Id of the created object, etc. </p>
 
 <p>Finally, at the very end of the chain, you can append an error handling function. If any of the promises are rejected the following promises will also be rejected passing the error message on to the error function.</p>
 
@@ -116,9 +223,9 @@ Finally, Angular provides the $q service, which provides the constructor for bui
 </pre></div>
 
 <h1>
-<a name="using-the-helper-methods" class="anchor" href="#using-the-helper-methods"><span class="octicon octicon-link"></span></a>Using the helper methods</h1>
+<a name="using-the-vfr-helper-methods" class="anchor" href="#using-the-vfr-helper-methods"><span class="octicon octicon-link"></span></a>Using the vfr helper methods</h1>
 
-<p>ngForce provides some helper methods that are intended to make the developers life simpler. Most of these are self explanitory but a couple of them are a bit more esoteric. </p>
+<p>vfr provides some helper methods that are intended to make the developers life simpler. Most of these are self explanitory but a couple of them are a bit more esoteric. </p>
 
 <p>Perhaps the most confusing is the bulkCreate method. You can invoke the bulk create method thusly:</p>
 
