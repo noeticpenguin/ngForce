@@ -20,8 +20,8 @@ angular.module('ngForce').provider('sfTemplate', [
   '$http',
   '$templateCache',
   '$log',
-  function () {
-    this.$get = function ($q, $http, $templateCache, $log) {
+  function ($q, $http, $templateCache, $log) {
+    this.$get = function () {
       // Add substrings which are unique to the script tags you wish to block.
       // Note: Regex support would be nice. The problem is that JS files have `.`
       //   as part of the file path, which is symbol reserved by Regex.
