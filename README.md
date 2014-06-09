@@ -1,6 +1,4 @@
-ngForce -- a Force.com && Angular.js integration framework.
-=======
-
+![ngForce Logo](https://raw.githubusercontent.com/noeticpenguin/ngForce/master/images/logo_128x128.png)
 ngForce is a set of Angular.js modules that facilitate quick and sustainable Angular.js application development on the Force.com Platform. With the Angular.js modules are a set of Apex classes facilitating Visualforce Remoting. 
 
 ##Architectural Overview.
