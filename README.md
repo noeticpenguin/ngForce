@@ -110,6 +110,7 @@ vfr, sfr, sfrquery and all the others return promises, and therefore your servic
 ##Grunt tasks
 We use Grunt to not only minify and combine the JS sources, but also to build a .staticResource file and deploy it to Salesforce orgs. In addition to the static resource with the JS files, the grunt deploy tasks push the ngForceController.cls and it's two test classes. The deploy process is interactive, and requires you to know your login, password and Security token. Here's a list of useful grunt tasks, and what they do:
 
+```
 default          => Alias for "min" task.
 deploy           => Refreshes resources and deploys to selected env (test|prod)
 min              => Custom task.
@@ -117,7 +118,7 @@ ngmin             > Annotate AngularJS scripts for minification
 refreshResources => Refresh the staticResource.zip files
 tasks            => Alias for "availabletasks" task.
 uglify            > Minify files with UglifyJS. (ngForce|requirements|oneFile)
-
+```
 
 Why is this important?
 ======================
