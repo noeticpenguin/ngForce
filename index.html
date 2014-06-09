@@ -18,7 +18,7 @@
     <div class="wrapper">
       <header>
         <h1>Ngforce</h1>
-        <p>Force.com Angular.js framework. A better description forthwith.</p>
+        <p>a Force.com &amp;&amp; Angular.js integration framework.</p>
         <p class="view"><a href="https://github.com/noeticpenguin/ngForce">View the Project on GitHub <small>noeticpenguin/ngForce</small></a></p>
         <ul>
           <li><a href="https://github.com/noeticpenguin/ngForce/zipball/master">Download <strong>ZIP File</strong></a></li>
@@ -27,16 +27,7 @@
         </ul>
       </header>
       <section>
-      <div id="logo" style="width:128px; height=128px;">
-        <img src="https://raw.github.com/noeticpenguin/ngForce/master/images/logo_128x128.png" width="128" height="128">
-      </div>
-        <h1>
-<a name="ngforce" class="anchor" href="#ngforce"><span class="octicon octicon-link"></span></a>ngForce</h1>
-
-<h1>
-<a name="forcecom-angularjs-framework" class="anchor" href="#forcecom-angularjs-framework"><span class="octicon octicon-link"></span></a>Force.com Angular.js framework.</h1>
-
-<p>ngForce is a set of Angular.js modules that facilitate quick and sustainable Angular.js application development on the Force.com Platform. With the Angular.js modules are a set of Apex classes facilitating Visualforce Remoting. </p>
+        <p>ngForce is a set of Angular.js modules that facilitate quick and sustainable Angular.js application development on the Force.com Platform. With the Angular.js modules are a set of Apex classes facilitating Visualforce Remoting. </p>
 
 <h2>
 <a name="architectural-overview" class="anchor" href="#architectural-overview"><span class="octicon octicon-link"></span></a>Architectural Overview.</h2>
@@ -164,6 +155,20 @@ of restanglar. </li>
 
 <p>Thereafter in the controller you can utilize the ngForce services much like the $http, or $q services in Angular.
 vfr, sfr, sfrquery and all the others return promises, and therefore your services can have a clean(er), less call-back-hell flow to them. </p>
+
+<h2>
+<a name="grunt-tasks" class="anchor" href="#grunt-tasks"><span class="octicon octicon-link"></span></a>Grunt tasks</h2>
+
+<p>We use Grunt to not only minify and combine the JS sources, but also to build a .staticResource file and deploy it to Salesforce orgs. In addition to the static resource with the JS files, the grunt deploy tasks push the ngForceController.cls and it's two test classes. The deploy process is interactive, and requires you to know your login, password and Security token. Here's a list of useful grunt tasks, and what they do:</p>
+
+<pre><code>default          =&gt; Alias for "min" task.
+deploy           =&gt; Refreshes resources and deploys to selected env (test|prod)
+min              =&gt; Custom task.
+ngmin             &gt; Annotate AngularJS scripts for minification
+refreshResources =&gt; Refresh the staticResource.zip files
+tasks            =&gt; Alias for "availabletasks" task.
+uglify            &gt; Minify files with UglifyJS. (ngForce|requirements|oneFile)
+</code></pre>
 
 <h1>
 <a name="why-is-this-important" class="anchor" href="#why-is-this-important"><span class="octicon octicon-link"></span></a>Why is this important?</h1>
