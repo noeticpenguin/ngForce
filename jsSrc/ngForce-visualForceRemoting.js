@@ -87,7 +87,19 @@ angular.module('ngForce').provider('vfr', [function ($q, $rootScope) {
 			 */
       handleResultWithPromise = function (result, event, nullok, deferred) {
         if (result) {
-          result = JSON.parse(result);
+          try{ //because the result may contain unparseable characters
+            result = JSON.parse(result);
+          } catch (err){
+	    var errorResult = [{
+	       message: result,
+	       "errorCode": "NULL_RETURN"
+	    }];
+	    if (typeof error === 'function') {
+	      error(errorResult);
+	    }
+	    deferred.reject(errorResult);
+	    $rootScope.$safeApply();
+	  }
           if (Array.isArray(result) && result[0].message && result[0].errorCode) {
             deferred.reject(result);
             $rootScope.$safeApply();
