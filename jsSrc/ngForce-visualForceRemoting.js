@@ -90,7 +90,6 @@ angular.module('ngForce').provider('vfr', [function ($q, $rootScope) {
           try{ //because the result may contain unparseable characters
             result = JSON.parse(result);
           } catch (err){
-	    console.log('unparseable response from the server: ' + result);
 	    var errorResult = [{
 	       message: result,
 	       "errorCode": "NULL_RETURN"
