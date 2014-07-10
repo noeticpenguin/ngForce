@@ -14,8 +14,8 @@
  * as it's a legit js Remoting action.
  * 
  */
-angular.module('ngForce').provider('vfr', '$q', [function ($q, $rootScope) {
-    this.$get = function () {
+angular.module('ngForce').provider('vfr', [function () {
+    this.$get = function ($q, $rootScope) {
       // Force shutdown the VFR provider / factory if VisualForce is not already an object on window.
       if (typeof Visualforce != 'object') {
         throw new Error('Visualforce is not available as an object! Did you forget to include the ngForce component?');
@@ -85,7 +85,7 @@ angular.module('ngForce').provider('vfr', '$q', [function ($q, $rootScope) {
 			 * @param  {Deferred} deferred Angular Promise object
 			 * @return {Deferred}          Angular promise with resolution
 			 */
-      handleResultWithPromise = function (result, event, nullok, deferred) {
+      function handleResultWithPromise (result, event, nullok, deferred) {
         if (result) {
           result = JSON.parse(result);
           if (Array.isArray(result) && result[0].message && result[0].errorCode) {
