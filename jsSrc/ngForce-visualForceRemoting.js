@@ -14,7 +14,7 @@
  * as it's a legit js Remoting action.
  * 
  */
-angular.module('ngForce').provider('vfr', [function () {
+angular.module('ngForce').provider('vfr', '$q', [function () {
     this.$get = function ($q, $rootScope) {
       // Force shutdown the VFR provider / factory if VisualForce is not already an object on window.
       if (typeof Visualforce != 'object') {
