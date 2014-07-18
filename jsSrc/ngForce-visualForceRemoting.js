@@ -87,7 +87,9 @@ angular.module('ngForce').provider('vfr', '$q', [function () {
 			 */
       function handleResultWithPromise (result, event, nullok, deferred) {
         if (result) {
-          result = JSON.parse(result);
+      		if(typeof result !== 'object') {
+      			result = JSON.parse(result);	
+      		}
           if (Array.isArray(result) && result[0].message && result[0].errorCode) {
             deferred.reject(result);
             $rootScope.$safeApply();
