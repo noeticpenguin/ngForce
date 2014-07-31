@@ -62,6 +62,8 @@ global class ngForceController {
 					if (valueType == Schema.DisplayType.Date) {
 						system.debug('doing ' + key + ' : ' + svalue);
 						obj.put(key, Date.valueOf(svalue));
+					} else if ( valueType == Schema.DisplayType.DateTime) {
+						obj.put(key, DateTime.valueOf(svalue));
 					} else if (valueType == Schema.DisplayType.Percent ||
 					           valueType == Schema.DisplayType.Currency) {
 						obj.put(key, svalue == '' ? null : Decimal.valueOf(svalue));
@@ -310,6 +312,8 @@ global class ngForceController {
 				for (String property : current.keySet()) {
 					if (targetFields.get(property).getDescribe().getType() == Schema.DisplayType.Date) {
 						obj.put(property, Date.valueOf((String)current.get(property)));
+					} else if ( targetFields.get(property).getDescribe().getType() == Schema.DisplayType.DateTime) {
+                                                obj.put(property, DateTime.valueOf((String)current.get(property)));
 					} else if (targetFields.get(property).getDescribe().getType() == Schema.DisplayType.Percent ||
 					           targetFields.get(property).getDescribe().getType() == Schema.DisplayType.Currency) {
 						obj.put(property, String.valueOf(current.get(property)) == '' ? null : Decimal.valueOf((String)current.get(property)));
