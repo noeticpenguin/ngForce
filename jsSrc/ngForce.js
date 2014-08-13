@@ -20,5 +20,6 @@
  */
 angular.module('ngForce', [
   'Scope.safeApply',
-  'restangular'
+  'restangular',
+  'multipart'
 ]);
