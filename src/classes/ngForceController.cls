@@ -10,14 +10,14 @@ global class ngForceController {
 	}
 
 	public class Select2Data {
-		String id               {get; set;}
-		String name             {get; set;}
-		String searchName {get; set;}
+		@TestVisible String id               {get; set;}
+		@TestVisible String name             {get; set;}
+		@TestVisible String searchName {get; set;}
 	}
 
 	public class QueryString {
-		String selectClause {get; set;}
-		String fromClause {get; set;}
+		@TestVisible String selectClause {get; set;}
+		@TestVisible String fromClause {get; set;}
 	}
 
 	private static String makeError(String message, String errorCode) {
@@ -126,57 +126,60 @@ global class ngForceController {
 		return JSON.serialize(result);
 	}
 
+	/*
+	 * These methods are available only after you have established a fieldset
+	 * on an object.
 	@remoteAction
 	public static String describeFieldSet(String objtype, String fieldSetName) {
-		Schema.SObjectType token = Schema.getGlobalDescribe().get(objtype);
-		Schema.DescribeSObjectResult dr = token.getDescribe();
-		Map<String, Schema.FieldSet> FsMap = dr.fieldSets.getMap();
-		return JSON.serialize(FsMap.get(FieldSetName).getFields());
+	Schema.SObjectType token = Schema.getGlobalDescribe().get(objtype);
+	Schema.DescribeSObjectResult dr = token.getDescribe();
+	Map<String, Schema.FieldSet> FsMap = dr.fieldSets.getMap();
+	return JSON.serialize(FsMap.get(FieldSetName).getFields());
 	}
 
 	@remoteAction
 	public static String describeField(String objtype, String fieldName) {
-		Schema.SObjectType token = Schema.getGlobalDescribe().get(objtype);
-		Schema.DescribeSObjectResult dr = token.getDescribe();
-		Schema.DescribeFieldResult fieldDescribe = dr.fields.getMap().get(fieldName).getDescribe();
-		return JSON.serialize(fieldDescribe);
+	Schema.SObjectType token = Schema.getGlobalDescribe().get(objtype);
+	Schema.DescribeSObjectResult dr = token.getDescribe();
+	Schema.DescribeFieldResult fieldDescribe = dr.fields.getMap().get(fieldName).getDescribe();
+	return JSON.serialize(fieldDescribe);
 	}
 
 	@remoteAction
 	public static String soqlFromFieldSet(String objtype, String fieldSetName) {
-		Schema.SObjectType token = Schema.getGlobalDescribe().get(objtype);
-		Schema.DescribeSObjectResult dr = token.getDescribe();
-		Map<String, Schema.FieldSet> FsMap = dr.fieldSets.getMap();
-		String selectClause = 'SELECT Id';
-		Set<Schema.FieldSetMember> querySet = new Set<Schema.FieldSetMember>();
-		querySet.addAll(FsMap.get(FieldSetName).getFields());
-		for (Schema.FieldSetMember f : querySet) {
-			selectClause += ', ' + f.getFieldPath();
-		}
-		String fromClause = ' FROM ' + dr.getName();
-		QueryString qs = new QueryString();
-		qs.selectClause = selectClause;
-		qs.fromClause = fromClause;
-		return JSON.serialize(qs);
+	Schema.SObjectType token = Schema.getGlobalDescribe().get(objtype);
+	Schema.DescribeSObjectResult dr = token.getDescribe();
+	Map<String, Schema.FieldSet> FsMap = dr.fieldSets.getMap();
+	String selectClause = 'SELECT Id';
+	Set<Schema.FieldSetMember> querySet = new Set<Schema.FieldSetMember>();
+	querySet.addAll(FsMap.get(FieldSetName).getFields());
+	for (Schema.FieldSetMember f : querySet) {
+	  selectClause += ', ' + f.getFieldPath();
+	}
+	String fromClause = ' FROM ' + dr.getName();
+	QueryString qs = new QueryString();
+	qs.selectClause = selectClause;
+	qs.fromClause = fromClause;
+	return JSON.serialize(qs);
 	}
 
 	@remoteAction
 	public static String queryFromFieldSet(String id, String fieldSetName) {
-		Id objId = (id) Id;
-		Schema.SObjectType token = objId.getSObjectType();
-		Schema.DescribeSObjectResult dr = token.getDescribe();
-		Map<String, Schema.FieldSet> FsMap = dr.fieldSets.getMap();
-		String queryString = 'SELECT Id';
-		List<Schema.FieldSetMember> querySet = new List<Schema.FieldSetMember>();
-		querySet = FsMap.get(FieldSetName).getFields();
-		for (Schema.FieldSetMember f : querySet) {
-			queryString += ', ' + f.getFieldPath();
-		}
-		queryString += ' FROM ' + dr.getName() + ' WHERE id = \'' + objId + '\' LIMIT 1';
-		system.debug(queryString);
-		return JSON.serialize(database.Query(queryString));
+	Id objId = (id) Id;
+	Schema.SObjectType token = objId.getSObjectType();
+	Schema.DescribeSObjectResult dr = token.getDescribe();
+	Map<String, Schema.FieldSet> FsMap = dr.fieldSets.getMap();
+	String queryString = 'SELECT Id';
+	List<Schema.FieldSetMember> querySet = new List<Schema.FieldSetMember>();
+	querySet = FsMap.get(FieldSetName).getFields();
+	for (Schema.FieldSetMember f : querySet) {
+	  queryString += ', ' + f.getFieldPath();
 	}
-
+	queryString += ' FROM ' + dr.getName() + ' WHERE id = \'' + objId + '\' LIMIT 1';
+	system.debug(queryString);
+	return JSON.serialize(database.Query(queryString));
+	}
+	*/
 	@remoteAction
 	public static String getPicklistValues(String objtype, String fieldName) {
 		Schema.SObjectType token = Schema.getGlobalDescribe().get(objtype);
@@ -198,15 +201,20 @@ global class ngForceController {
 		List<sObject> records;
 		try {
 			records = Database.query(soql);
+			system.debug('somehow passed ' + records);
 		} catch (QueryException qe) {
-			return '[{"message":"' + qe.getMessage() + '","errorCode":"INVALID_QUERY"}]';
+			system.debug('caught query exception');
+			return makeError(qe.getMessage(), 'INVALID_QUERY');
+		} catch (Exception e) {
+			system.debug('caught exception');
+			return makeError(e.getMessage(), 'INVALID_QUERY');
 		}
 		List<Select2Data> sData = new List<Select2Data>();
 		for (sObject r : records) {
 			Select2Data s = new Select2Data();
 			s.id = r.id;
 			s.name = (String) r.get('Name');
-			s.searchName = (String) r.get('SearchName__c');
+			//s.searchName = (String) r.get('SearchName__c');
 			sData.add(s);
 		}
 		return JSON.serialize(sData);
@@ -253,10 +261,11 @@ global class ngForceController {
 	@remoteAction
 	public static String create(String objtype, String fields) {
 		Schema.SObjectType targetType = Schema.getGlobalDescribe().get(objtype);
-		Map<String, Schema.sObjectField> targetFields = targetType.getDescribe().fields.getMap();
 		if (targetType == null) {
 			return '[{"message":"The requested resource does not exist","errorCode":"NOT_FOUND"}]';
 		}
+
+		Map<String, Schema.sObjectField> targetFields = targetType.getDescribe().fields.getMap();
 
 		SObject obj = targetType.newSObject();
 
@@ -313,7 +322,7 @@ global class ngForceController {
 					if (targetFields.get(property).getDescribe().getType() == Schema.DisplayType.Date) {
 						obj.put(property, Date.valueOf((String)current.get(property)));
 					} else if ( targetFields.get(property).getDescribe().getType() == Schema.DisplayType.DateTime) {
-                                                obj.put(property, DateTime.valueOf((String)current.get(property)));
+						obj.put(property, DateTime.valueOf((String)current.get(property)));
 					} else if (targetFields.get(property).getDescribe().getType() == Schema.DisplayType.Percent ||
 					           targetFields.get(property).getDescribe().getType() == Schema.DisplayType.Currency) {
 						obj.put(property, String.valueOf(current.get(property)) == '' ? null : Decimal.valueOf((String)current.get(property)));
@@ -379,9 +388,7 @@ global class ngForceController {
 		try {
 			update objs;
 		} catch (DMLException dmle) {
-			return '[{"data":' + jsonObjArr +
-			       ',"message":"' + dmle.getDmlMessage(0) +
-			       '","errorCode":"' + dmle.getDmlType(0).name() + '"}]';
+			return makeError(dmle.getMessage(), 'DML_ERROR');
 		}
 
 		List<Id> rids = new List<Id>();
@@ -519,11 +526,15 @@ global class ngForceController {
 
 	@remoteAction
 	public static String search(String sosl) {
+		system.debug('$$$$$$$$$' + sosl);
 		List<List<SObject>> result;
 		try {
 			result = Search.query(sosl);
 		} catch (SearchException se) {
 			return '[{"message":"' + se.getMessage() + '","errorCode":"INVALID_SEARCH"}]';
+		} catch (Exception e) {
+			system.debug('$$$$$$$$$$$' + e.getCause());
+			return '[{"message":"' + e.getMessage() + '","errorCode":"INVALID_SEARCH"}]';
 		}
 
 		return JSON.serialize(result);
