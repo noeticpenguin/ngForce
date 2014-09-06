@@ -21,5 +21,6 @@
 angular.module('ngForce', [
   'Scope.safeApply',
   'restangular',
-  'multipart'
+  'multipart',
+  'ngForce.config'
 ]);

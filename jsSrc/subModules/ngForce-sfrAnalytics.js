@@ -17,12 +17,12 @@ angular.module('ngForce').factory('sfranalytics', [
   '$q',
   '$rootScope',
   'Restangular',
-  function ($q, $rootScope, Restangular) {
+  function ($q, $rootScope, Restangular, ngForceConfig) {
 
     // private functions and variables
     var _baseUrl = '/services/data/v29.0/analytics/';
     var _additionalHeaders = {
-      'Authorization': 'Bearer ' + window.apiSid
+      'Authorization': 'Bearer ' + ngForceConfig.sessionId
     };
 
     var _analytics = Restangular.withConfig(function (RestangularConfigurer) {
