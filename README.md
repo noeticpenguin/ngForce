@@ -119,15 +119,15 @@ The following values are exposed within the constant:
 ## Usage
 Ensure to include the external configuration Visualforce page immediately after you have included ngForce.
 
-'''
+```
 <script src="{!URLFOR($Resource.ngForce, 'scripts/ngForce.js')}"></script>
 <script src="{!URLFOR($Page.angular_config)}"></script>
-'''
+```
 
 ## Visualforce page
 Below is what the external configuration Visualforce page looks like:
 
-'''
+```
 <apex:page showheader="false" sidebar="false" contenttype="text/javascript">
 (function(angular){
 
@@ -142,7 +142,7 @@ Below is what the external configuration Visualforce page looks like:
 
 })(angular);
 </apex:page>
-'''
+```
 
 ### Constant - sessionId
 This the session ID of the currently logged in user. It is used to connect to the REST and analytics API.
@@ -158,7 +158,7 @@ When loading templates which are a Visualforce page use this constant to create 
 #### Example usage
 This is an example of how to use the 'sitePrefix' property.
 
-'''
+```
 angular.module('app').config(function($routeProvider, ngForceConfig){
 	
     $routeProvider.
@@ -173,6 +173,7 @@ angular.module('app').config(function($routeProvider, ngForceConfig){
 	otherwise({ redirectTo: '/' });
 
 });
+```
 
 ### Constant - resourceUrl
 If you wish to load templates from within a static resource then you can use the 'resourceUrl' property to get the full path to the templates folder.
@@ -180,7 +181,7 @@ If you wish to load templates from within a static resource then you can use the
 #### Example usage
 This is an example of how to use the 'resourceUrl' property.
 
-'''
+```
 angular.module('app').config(function($routeProvider, ngForceConfig){
 	
     $routeProvider.
@@ -195,7 +196,7 @@ angular.module('app').config(function($routeProvider, ngForceConfig){
 	otherwise({ redirectTo: '/' });
 
 });
-'''
+```
 
 Grunt tasks
 ===========
