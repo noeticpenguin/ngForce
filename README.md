@@ -190,7 +190,7 @@ angular.module('app').config(function($routeProvider, ngForceConfig){
 		controller: 'HomeController'
 	}).
 	when('/about', {
-		templateUrl: ngForceConfig.sitePrefix + '/views/about.html',
+		templateUrl: ngForceConfig.resourceUrl + '/views/about.html',
 		controller: 'AboutController'
 	}).
 	otherwise({ redirectTo: '/' });
