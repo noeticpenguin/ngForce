@@ -64,6 +64,8 @@ angular.module('ngForce')
 						var namespace, controller, method;
 						var Manager = Visualforce.remoting.Manager;
 						var parts = remoteAction.split('.');
+						var instance = this;
+
 						if (options && typeof options !== 'object') {
 							throw new Error('Options must be an object');
 						}
@@ -89,7 +91,7 @@ angular.module('ngForce')
 							}
 							args.splice(0, 0, remoteAction);
 							args.push(function(result, event) {
-								handleResultWithPromise(result, event, nullok, deferred);
+								instance.handleResultWithPromise(result, event, nullok, deferred);
 							});
 							if (options) {
 								args.push(options);

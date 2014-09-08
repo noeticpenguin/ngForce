@@ -16,7 +16,7 @@ angular.module('ngForce').factory('sfrquery', [
   '$log',
   'Restangular',
   'encodeUriQuery',
-  function ($q, $rootScope, $log, Restangular, encodeUriQuery) {
+  function ($q, $rootScope, $log, Restangular, encodeUriQuery, ngForceConfig) {
     // Custom configure the restangular setup for this
     var sfrquery = Restangular.withConfig(function (RestangularConfigurer) {
         //These get passed through to the standard Angular $http 
@@ -24,16 +24,16 @@ angular.module('ngForce').factory('sfrquery', [
         // Establish our base url.
         RestangularConfigurer.setBaseUrl('/services/data/v30.0/');
         // and set our authorization header.
-        RestangularConfigurer.setDefaultHeaders({ 'Authorization': 'Bearer ' + window.apiSid });  // With the SF "query" endpoint, it may not return the whole set
-                                                                                                  //   of requested records. In this case, it will send one page of
-                                                                                                  //   records, the total number of records, and a URL we can use to
-                                                                                                  //   get the remaining pages of records.
-                                                                                                  // Therefore, we can not use an extractor, as it will not let us
-                                                                                                  //   access the "totalSize" and "nextRecordsUrl" attributes, but
-                                                                                                  //   only give us the contents of the "records" attributes.
-                                                                                                  // RestangularConfigurer.setResponseExtractor(function(response) {
-                                                                                                  // return response.records;
-                                                                                                  // });
+        RestangularConfigurer.setDefaultHeaders({ 'Authorization': 'Bearer ' + ngForceConfig.sessionId });  // With the SF "query" endpoint, it may not return the whole set
+                                                                                                            //   of requested records. In this case, it will send one page of
+                                                                                                            //   records, the total number of records, and a URL we can use to
+                                                                                                            //   get the remaining pages of records.
+                                                                                                            // Therefore, we can not use an extractor, as it will not let us
+                                                                                                            //   access the "totalSize" and "nextRecordsUrl" attributes, but
+                                                                                                            //   only give us the contents of the "records" attributes.
+                                                                                                            // RestangularConfigurer.setResponseExtractor(function(response) {
+                                                                                                            // return response.records;
+                                                                                                            // });
       }).setRestangularFields({
         id: 'Id',
         selfLink: 'attributes.url'

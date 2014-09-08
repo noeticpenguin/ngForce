@@ -105,7 +105,101 @@ app.controller('oppBoxCtrl', function($scope, $dialog, vfr)
 Thereafter in the controller you can utilize the ngForce services much like the $http, or $q services in Angular.
 vfr, sfr, sfrquery and all the others return promises, and therefore your services can have a clean(er), less call-back-hell flow to them. 
 
-##Grunt tasks
+External configuration
+======================
+
+Since Salesforce will not include merge field values inside static resources and parts of the library requiring these values there is a Visualforce page to facilitate exposing these values as a constant. An example of such a merge field is `{!$Api.Session_ID}`.
+
+The following values are exposed within the constant:
+
++ sessionId
++ sitePrefix
++ resourceUrl
+
+## Usage
+Ensure to include the external configuration Visualforce page immediately after you have included ngForce.
+
+```
+<script src="{!URLFOR($Resource.ngForce, 'scripts/ngForce.js')}"></script>
+<script src="{!URLFOR($Page.angular_config)}"></script>
+```
+
+## Visualforce page
+Below is what the external configuration Visualforce page looks like:
+
+```
+<apex:page showheader="false" sidebar="false" contenttype="text/javascript">
+(function(angular){
+
+	var sitePrefix = '{!$Site.Prefix}';
+	if(sitePrefix === '') sitePrefix ='/apex';
+
+	angular.module('ngForce.config', []).constant('ngForceConfig', {
+		sessionId: '{!$Api.Session_ID}',
+		sitePrefix: sitePrefix,
+		resourceUrl: '{!URLFOR($Resource.bundle)}'
+	});
+
+})(angular);
+</apex:page>
+```
+
+### Constant - sessionId
+This the session ID of the currently logged in user. It is used to connect to the REST and analytics API.
+
+Although you can use this within your own application, the use of the sessionId within the ngForce library is automatic and requires no configuration. 
+
+Do not remove this from the external configuration as this is mandatory for authenticating with Salesforce.
+
+### Constant - sitePrefix
+
+When loading templates which are Visualforce pages use the `ngForceConfig.sitePrefix` constant to create the correct relative path. Normally, pages are loaded using `/apex` prefix, however when loading within a Salesforce site a different prefix maybe in use. For example, if the Salesforce site is named `mySite` then the prefix will be `/mySite`. 
+
+#### Example usage
+This is an example of how to use the `ngForceConfig.sitePrefix` constant.
+
+```
+angular.module('app').config(function($routeProvider, ngForceConfig){
+	
+    $routeProvider.
+	when('/home', {
+		templateUrl: ngForceConfig.sitePrefix + '/home',
+		controller: 'HomeController'
+	}).
+	when('/about', {
+		templateUrl: ngForceConfig.sitePrefix + '/about',
+		controller: 'AboutController'
+	}).
+	otherwise({ redirectTo: '/' });
+
+});
+```
+
+### Constant - resourceUrl
+If you wish to load templates from within a static resource then you can use the `ngForceConfig.resourceUrl` constant to get the full path to the templates folder.
+
+#### Example usage
+This is an example of how to use the `ngForceConfig.resourceUrl` constant.
+
+```
+angular.module('app').config(function($routeProvider, ngForceConfig){
+	
+    $routeProvider.
+	when('/home', {
+		templateUrl: ngForceConfig.resourceUrl + '/views/home.html',
+		controller: 'HomeController'
+	}).
+	when('/about', {
+		templateUrl: ngForceConfig.resourceUrl + '/views/about.html',
+		controller: 'AboutController'
+	}).
+	otherwise({ redirectTo: '/' });
+
+});
+```
+
+Grunt tasks
+===========
 We use Grunt to not only minify and combine the JS sources, but also to build a .staticResource file and deploy it to Salesforce orgs. In addition to the static resource with the JS files, the grunt deploy tasks push the ngForceController.cls and it's two test classes. The deploy process is interactive, and requires you to know your login, password and Security token. Here's a list of useful grunt tasks, and what they do:
 
 ```

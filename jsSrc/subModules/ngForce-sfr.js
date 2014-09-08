@@ -24,14 +24,14 @@ angular.module('ngForce').factory('sfr', [
   '$rootScope',
   'Restangular',
   '$log',
-  function ($q, $rootScope, Restangular, $log) {
+  function ($q, $rootScope, Restangular, $log, ngForceConfig) {
     var sobjectEndpoints = [];
     // sObjectName => restangularObject
     var recordEndpoints = [];
     // recordId => restangularObject
     var sfRest = {
         model: function (modelName, recordId) {
-          var baseResource = Restangular.setDefaultHeaders({ 'Authorization': 'Bearer ' + window.apiSid }).setBaseUrl('/services/data/v29.0/sobjects/').setRestangularFields({
+          var baseResource = Restangular.setDefaultHeaders({ 'Authorization': 'Bearer ' + ngForceConfig.sessionId }).setBaseUrl('/services/data/v29.0/sobjects/').setRestangularFields({
               id: 'Id',
               selfLink: 'attributes.url'
             });

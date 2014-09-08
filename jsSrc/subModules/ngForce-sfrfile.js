@@ -4,7 +4,7 @@
  * Please see the following documentation for more information:
  * http://www.salesforce.com/us/developer/docs/api_rest/Content/dome_sobject_insert_update_blob.htm
  */
-angular.module('ngForce').factory('sfrfile', function($q, $rootScope, $log, Restangular, MultipartRequest, RequestPart) {
+angular.module('ngForce').factory('sfrfile', function($q, $rootScope, $log, Restangular, MultipartRequest, RequestPart, ngForceConfig) {
     var sfrfile = Restangular.withConfig(function(RestangularConfigurer) {
         RestangularConfigurer.setDefaultHttpFields({
             cache: false,
@@ -14,7 +14,7 @@ angular.module('ngForce').factory('sfrfile', function($q, $rootScope, $log, Rest
         });
         RestangularConfigurer.setBaseUrl('/services/data/v29.0/sobjects');
         RestangularConfigurer.setDefaultHeaders({
-            'Authorization': 'Bearer ' + window.apiSid
+            'Authorization': 'Bearer ' + ngForceConfig.sessionId
         });
     }).setRestangularFields({
         id: "Id",
