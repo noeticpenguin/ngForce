@@ -108,7 +108,7 @@ vfr, sfr, sfrquery and all the others return promises, and therefore your servic
 External configuration
 ======================
 
-Since Salesforce will not include merge field values inside static resources and parts of the library requiring these values there is a Visualforce page to facilitate exposing these values as a constant. An example of such a merge field is '{!$Api.Session_ID}'.
+Since Salesforce will not include merge field values inside static resources and parts of the library requiring these values there is a Visualforce page to facilitate exposing these values as a constant. An example of such a merge field is `{!$Api.Session_ID}`.
 
 The following values are exposed within the constant:
 
@@ -153,7 +153,7 @@ Do not remove this from the external configuration as this is mandatory for auth
 
 ### Constant - sitePrefix
 
-When loading templates which are a Visualforce page use this constant to create the correct relative path. Normally, pages are loaded using '/apex' prefix, however when loading within a Salesforce site a different prefix maybe in use. For example, if the Salesforce site is named 'mySite' then the prefix will be '/mySite'. 
+When loading templates which are Visualforce pages use the 'ngForceConfig.sitePrefix' constant to create the correct relative path. Normally, pages are loaded using '/apex' prefix, however when loading within a Salesforce site a different prefix maybe in use. For example, if the Salesforce site is named 'mySite' then the prefix will be '/mySite'. 
 
 #### Example usage
 This is an example of how to use the 'sitePrefix' property.
@@ -176,7 +176,7 @@ angular.module('app').config(function($routeProvider, ngForceConfig){
 ```
 
 ### Constant - resourceUrl
-If you wish to load templates from within a static resource then you can use the 'resourceUrl' property to get the full path to the templates folder.
+If you wish to load templates from within a static resource then you can use the 'ngForceConfig.resourceUrl' constant to get the full path to the templates folder.
 
 #### Example usage
 This is an example of how to use the 'resourceUrl' property.
