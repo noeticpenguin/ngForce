@@ -153,10 +153,10 @@ Do not remove this from the external configuration as this is mandatory for auth
 
 ### Constant - sitePrefix
 
-When loading templates which are Visualforce pages use the 'ngForceConfig.sitePrefix' constant to create the correct relative path. Normally, pages are loaded using '/apex' prefix, however when loading within a Salesforce site a different prefix maybe in use. For example, if the Salesforce site is named 'mySite' then the prefix will be '/mySite'. 
+When loading templates which are Visualforce pages use the `ngForceConfig.sitePrefix` constant to create the correct relative path. Normally, pages are loaded using `/apex` prefix, however when loading within a Salesforce site a different prefix maybe in use. For example, if the Salesforce site is named `mySite` then the prefix will be `/mySite`. 
 
 #### Example usage
-This is an example of how to use the 'sitePrefix' property.
+This is an example of how to use the `ngForceConfig.sitePrefix` constant.
 
 ```
 angular.module('app').config(function($routeProvider, ngForceConfig){
@@ -176,10 +176,10 @@ angular.module('app').config(function($routeProvider, ngForceConfig){
 ```
 
 ### Constant - resourceUrl
-If you wish to load templates from within a static resource then you can use the 'ngForceConfig.resourceUrl' constant to get the full path to the templates folder.
+If you wish to load templates from within a static resource then you can use the `ngForceConfig.resourceUrl` constant to get the full path to the templates folder.
 
 #### Example usage
-This is an example of how to use the 'resourceUrl' property.
+This is an example of how to use the `ngForceConfig.resourceUrl` constant.
 
 ```
 angular.module('app').config(function($routeProvider, ngForceConfig){
