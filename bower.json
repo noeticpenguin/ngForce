@@ -6,7 +6,13 @@
         "Kevin Poorman <kjp@brightleafsoftware.com>"
     ],
     "description": "Force.com Angular.js framework.",
-    "main": "./build/ngForce.min.js",
+    "main": [
+        "./lib/safeApply.js",
+        "./lib/lo-dash.compat.js",
+        "./lib/restangular.js",
+        "./jsSrc/ngForce.js",
+        "./jsSrc/ngForce-visualForceRemoting.js"
+    ],
     "keywords": [
         "salesforce",
         "angular"
