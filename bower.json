@@ -7,7 +7,7 @@
     ],
     "description": "Force.com Angular.js framework.",
     "main": [
-        "./build/ngForce-dependencies.min.js"
+        "./build/ngForceWithDependencies.min.js"
     ],
     "keywords": [
         "salesforce",
