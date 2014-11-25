@@ -22,7 +22,7 @@ angular.module('ngForce')
 		 * timeout: set the timeout for visualforce to respond.
 		 * @type {Object}
 		 */
-		var standardOptions = {
+		var standardOpts = {
 			escape: false,
 			timeout: 10000
 		};
@@ -38,10 +38,11 @@ angular.module('ngForce')
 				if (newOptions && typeof newOptions !== 'object') {
 					throw new Error('standardOptions must be an object');
 				}
-				standardOptions = newOptions;
+				standardOpts = newOptions;
 			},
 			$get: function($q, $rootScope) {
 				return {
+					standardOptions: standardOpts,
 					/*
 					 * Kevin o'Hara released premote, a nice lib for wrapping
 					 * visualforce remoting calls in a promise interface. this
@@ -64,8 +65,6 @@ angular.module('ngForce')
 						var namespace, controller, method;
 						var Manager = Visualforce.remoting.Manager;
 						var parts = remoteAction.split('.');
-						var instance = this;
-
 						if (options && typeof options !== 'object') {
 							throw new Error('Options must be an object');
 						}
@@ -81,6 +80,7 @@ angular.module('ngForce')
 								method = parts[1];
 							}
 						}
+
 						return function() {
 							var deferred = $q.defer();
 							var args;
@@ -91,7 +91,7 @@ angular.module('ngForce')
 							}
 							args.splice(0, 0, remoteAction);
 							args.push(function(result, event) {
-								instance.handleResultWithPromise(result, event, nullok, deferred);
+								vfr.handleResultWithPromise(result, event, nullok, deferred);
 							});
 							if (options) {
 								args.push(options);
@@ -109,6 +109,11 @@ angular.module('ngForce')
 					 * @return {Deferred}          Angular promise with resolution
 					 */
 					handleResultWithPromise: function(result, event, nullok, deferred) {
+						console.log('Handling with Promise');
+						console.log('result = ', result);
+						console.log('event = ', event);
+						console.log('null ok = ', nullok);
+						console.log('deferred = ', deferred);
 						if (result) {
 							if (typeof result !== 'object') {
 								result = JSON.parse(result);
@@ -133,77 +138,77 @@ angular.module('ngForce')
 					},
 					// Bulk Create
 					bulkCreate: function() {
-						send('ngForceController.bulkCreate', standardOptions, false);
+						this.send('ngForceController.bulkCreate', standardOptions, false);
 					},
 					// Bulk Update
 					bulkUpdate: function() {
-						send('ngForceController.bulkUpdate', standardOptions, false);
+						this.send('ngForceController.bulkUpdate', standardOptions, false);
 					},
 					// Create
 					create: function() {
-						send('ngForceController.create', standardOptions, false);
+						this.send('ngForceController.create', standardOptions, false);
 					},
 					// Clone
 					clone: function() {
-						send('ngForceController.sObjectKlone', standardOptions, false);
+						this.send('ngForceController.sObjectKlone', standardOptions, false);
 					},
 					// Delete
 					del: function() {
-						send('ngForceController.del', standardOptions, true);
+						this.send('ngForceController.del', standardOptions, true);
 					},
 					// Describe
 					describe: function() {
-						send('ngForceController.describe', standardOptions, false);
+						this.send('ngForceController.describe', standardOptions, false);
 					},
 					// Describe Field Set
 					describeFieldSet: function() {
-						send('ngForceController.describeFieldSet', standardOptions, false);
+						this.send('ngForceController.describeFieldSet', standardOptions, false);
 					},
 					// Describe Picklist Values
 					describePicklistValues: function() {
-						send('ngForceController.getPicklistValues', standardOptions, false);
+						this.send('ngForceController.getPicklistValues', standardOptions, false);
 					},
 					// Get Object Type
 					getObjectType: function() {
-						send('ngForceController.getObjType', standardOptions, false);
+						this.send('ngForceController.getObjType', standardOptions, false);
 					},
 					// Get Query Results as select2 data
 					getQueryResultsAsSelect2Data: function() {
-						send('ngForceController.getQueryResultsAsSelect2Data', standardOptions, false);
+						this.send('ngForceController.getQueryResultsAsSelect2Data', standardOptions, false);
 					},
 					// Query
 					query: function() {
-						send('ngForceController.query', {
+						this.send('ngForceController.query', {
 							escape: false,
 							timeout: 30000
 						}, false);
 					},
 					// Query from Fieldset
 					queryFromFieldset: function() {
-						send('ngForceController.queryFromFieldSet', {
+						this.send('ngForceController.queryFromFieldSet', {
 							escape: false,
 							timeout: 30000
 						}, false);
 					},
 					// Retrieve a field list for a given object.
 					retrieve: function() {
-						send('ngForceController.retrieve', standardOptions, false);
+						this.send('ngForceController.retrieve', standardOptions, false);
 					},
 					// Search (SOSL)
 					search: function() {
-						send('ngForceController.search', standardOptions, false);
+						this.send('ngForceController.search', standardOptions, false);
 					},
 					// Soql from Fieldset
 					soqlFromFieldSet: function() {
-						send('ngForceController.soqlFromFieldSet', standardOptions, false);
+						this.send('ngForceController.soqlFromFieldSet', standardOptions, false);
 					},
 					// Update
 					update: function() {
-						send('ngForceController.updat', standardOptions, true);
+						this.send('ngForceController.updat', standardOptions, true);
 					},
 					// Upsert
 					upsert: function() {
-						send('ngForceController.upser', standardOptions, true);
+						this.send('ngForceController.upser', standardOptions, true);
 					}
 				};
 			}
