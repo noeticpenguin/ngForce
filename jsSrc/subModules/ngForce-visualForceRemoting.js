@@ -135,8 +135,9 @@ angular.module('ngForce')
 				 * Note that send and standardOptions essentially punt to their parental
 				 * objects.
 				 *
-				 * Special thanks to @marpstar for helping me figure out the bug in .send()
+				 * Huge thanks to @marpstar for helping me figure out the bug in .send()
 				 * that was causing pre-defined vfr methods to fail.
+				 *
 				 *
 				 */
 				return {
