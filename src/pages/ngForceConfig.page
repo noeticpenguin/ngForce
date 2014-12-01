@@ -7,7 +7,7 @@
 	angular.module('ngForce.config', []).constant('ngForceConfig', {
 		sessionId: '{!$Api.Session_ID}',
 		sitePrefix: sitePrefix,
-		resourceUrl: '' // Put the path the static resource here, e.g. '{!URLFOR($Resource.bundle)}'
+		resourceUrl: '' <!-- Put the path the static resource here, e.g. '{!URLFOR($Resource.bundle)}' -->
 	});
 
 })(angular);
