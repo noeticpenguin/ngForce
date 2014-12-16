@@ -2,7 +2,7 @@
 ngForce is a set of Angular.js modules that facilitate quick and sustainable Angular.js application development on the Force.com Platform. With the Angular.js modules are a set of Apex classes facilitating Visualforce Remoting. 
 
 ##Architectural Overview.
-ngForce is composed of a number of independent modules that are normally comiled/minified into a single .min.js file for use. However, advanced developers can adopt singular modules from the jsSrc directory, so long as the underlying requirements for ngForce are met:
+ngForce is composed of a number of independent modules that are normally compiled/minified into a single .min.js file for use. However, advanced developers can adopt singular modules from the jsSrc directory, so long as the underlying requirements for ngForce are met:
 
 1. Lo-Dash.js (or Underscore, but Lo-Dash is significantly faster)
 2. safeApply.js - An Angular module in it's own right, this module provides a fire and forget method of syncing external data retreival with the Angular Run loop.
