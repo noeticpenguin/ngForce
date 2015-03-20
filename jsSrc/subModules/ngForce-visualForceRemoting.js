@@ -16,16 +16,6 @@
  */
 angular.module('ngForce')
 	.provider('vfr', function() {
-		/**
-		 * Object contains the two standard fields needed by the .send method: escape and timeout.
-		 * escape: Should the result be escape. default to false.
-		 * timeout: set the timeout for visualforce to respond.
-		 * @type {Object}
-		 */
-		var standardOpts = {
-			escape: false,
-			timeout: 10000
-		};
 
 		// Force shutdown the VFR provider / factory if VisualForce is not already an object on window.
 		if (typeof Visualforce != 'object') {
@@ -34,6 +24,16 @@ angular.module('ngForce')
 		var vfRemote = {};
 
 		return {
+			/**
+			 * Object contains the two standard fields needed by the .send method: escape and timeout.
+			 * escape: Should the result be escape. default to false.
+			 * timeout: set the timeout for visualforce to respond.
+			 * @type {Object}
+			 */
+			var standardOpts = {
+				escape: false,
+				timeout: 10000
+			},
 			setStandardOptions: function(newOptions) {
 				if (newOptions && typeof newOptions !== 'object') {
 					throw new Error('standardOptions must be an object');
