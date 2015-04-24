@@ -111,10 +111,12 @@ angular.module('ngForce')
 						if (typeof result !== 'object') {
 							result = JSON.parse(result);
 						}
-						if (Array.isArray(result) && result[0].message && result[0].errorCode) {
+						if (Array.isArray(result) && result.length !== 0 && result[0].message && result[0].errorCode) {
+							//Handle INVALID_SESSION_ID err coming back
 							deferred.reject(result);
 							$rootScope.$safeApply();
 						} else {
+							//result is an object, or has been parsed to one, or is an array
 							deferred.resolve(result);
 							$rootScope.$safeApply();
 						}
