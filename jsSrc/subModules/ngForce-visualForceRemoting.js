@@ -120,6 +120,15 @@ angular.module('ngForce')
 							deferred.resolve(result);
 							$rootScope.$safeApply();
 						}
+					} else if (event && event.status === false) {
+						//exception or other unspecified error occurred while running the remote method
+						deferred.reject({
+							message: event.message,
+							method: event.method,
+							where: event.where,
+							errorCode: (event.type === 'exception' ? 'EXCEPTION' : 'UNSPECIFIED_ERROR'
+							$rootScope.$safeApply();
+						});
 					} else if (typeof nullok !== 'undefined' && nullok) {
 						deferred.resolve();
 						$rootScope.$safeApply();
