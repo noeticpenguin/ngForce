@@ -111,13 +111,24 @@ angular.module('ngForce')
 						if (typeof result !== 'object') {
 							result = JSON.parse(result);
 						}
-						if (Array.isArray(result) && result[0].message && result[0].errorCode) {
+						if (Array.isArray(result) && result.length !== 0 && result[0].message && result[0].errorCode) {
+							//Handle INVALID_SESSION_ID err coming back
 							deferred.reject(result);
 							$rootScope.$safeApply();
 						} else {
+							//result is an object, or has been parsed to one, or is an array
 							deferred.resolve(result);
 							$rootScope.$safeApply();
 						}
+					} else if (event && event.status === false) {
+						//exception or other unspecified error occurred while running the remote method
+						deferred.reject({
+							message: event.message,
+							method: event.method,
+							where: event.where,
+							errorCode: (event.type === 'exception' ? 'EXCEPTION' : 'UNSPECIFIED_ERROR'
+							$rootScope.$safeApply();
+						});
 					} else if (typeof nullok !== 'undefined' && nullok) {
 						deferred.resolve();
 						$rootScope.$safeApply();
