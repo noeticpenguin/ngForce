@@ -126,9 +126,9 @@ angular.module('ngForce')
 							message: event.message,
 							method: event.method,
 							where: event.where,
-							errorCode: (event.type === 'exception' ? 'EXCEPTION' : 'UNSPECIFIED_ERROR'
-							$rootScope.$safeApply();
+							errorCode: (event.type === 'exception' ? 'EXCEPTION' : 'UNSPECIFIED_ERROR')
 						});
+						$rootScope.$safeApply();
 					} else if (typeof nullok !== 'undefined' && nullok) {
 						deferred.resolve();
 						$rootScope.$safeApply();
