@@ -12,7 +12,7 @@ ngForce is composed of a number of independent modules that are normally compile
 ## /jsSrc/ngForce-visualForceRemoting.js
 This service provides methods for interacting with the force.com platform without burning API calls. It does this by providing both a generic Angular-ized wrapper for *Any visualforce remoting annotated method* in your org, as well as a set of pre-wired convienence methods from the acompanying ngForceController.cls. These largely handle CRUD, Bulk Create and Update as well as manipulation of fieldsets. 
 ### Methods of Note:
-vfr.send() - Send gives you the ability to on-demand generate a function that make a JSRemoting call to any @remoteAction annotated method in your org. This method accepts a fully qualified && namespaced method name specifying the remoteAction method to invoke as well as an Options hash and a boolean parameter determining if the remoteAction method is allowed to return a null response object. (for instance, delete.) *This method returns a function that, when invoked, makes a promised based visualforce remoting call* Using .send() you can:
+vfr.send() - Send gives you the ability to on-demand generate a function that makes a JSRemoting call to any @remoteAction annotated method in your org. This method accepts a fully qualified && namespaced method name specifying the remoteAction method to invoke as well as an Options hash and a boolean parameter determining if the remoteAction method is allowed to return a null response object. (for instance, delete.) *This method returns a function that, when invoked, makes a promised based visualforce remoting call* Using .send() you can:
 
 ```javascript
 	var makeChatterPost = vfr.send('Example.Controller.Method', options, false); 
