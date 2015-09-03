@@ -229,6 +229,83 @@ public class ngForceController_TEST {
 
 	}
 
+	static testMethod void testBulkUpdate1() {
+		List<Account> accounts = new List<Account>();
+		for (Integer i = 0; i < 10; i++) {
+			accounts.add(new Account(
+			               Name = 'Account-' + i
+			             ));
+		}
+		insert accounts;
+		String fields = '[';
+		for (Integer i = 0; i < 10; i++) {
+			Account a = accounts.get(i);
+			//'"0":{"Id":, "Name":"Account-1"},' +
+			//fields += '"' + i + '":' + '{"Id":"' + a.Id + '",' + '"Name":"AccountAfter-' + i + '"},';
+			fields += '{"Id":"' + a.Id + '",' + '"Name":"AccountAfter-' + i + '"},';
+		}
+		fields = fields.substring(0, fields.lastIndexOf(','));
+		fields += ']';
+		//System.assertEquals(fields, null);
+		String jsonResult = ngForceController.bulkUpdate('Account', fields);
+		Map<String, Object> result = (Map<String, Object>)JSON.deserializeUntyped(jsonResult);
+		//List<Object> result = (List<Object>)JSON.deserializeUntyped(jsonResult);
+		System.AssertNotEquals(result, null);
+
+		String jsonResult2 = ngForceController.bulkUpdate('', fields);
+		assertError(jsonResult2, 'NOT_FOUND', 'ngForceController.bulkCreate');
+		String mutatedFields = fields.remove('001');
+		jsonResult2 = ngForceController.bulkUpdate('Account', mutatedFields);
+		assertError(jsonResult2, 'DML_ERROR', 'ngForceController.bulkCreate');
+
+		jsonResult2 = ngForceController.bulkUpdate('Account', fields.remove('Name'));
+		assertError(jsonResult2, 'INVALID_JSON', 'ngForceController.bulkCreate');
+
+		Set<String> accountIds = new Set<String>();
+		for (Account account : accounts) {
+			accountIds.add((String)account.Id);
+		}
+		List<Object> ids = (List<Object>)result.get('id');
+		for (Object id : ids) {
+			String idString = (String) id;
+			System.assertEquals(accountIds.contains(idString), true, 'bulkUpdate response did not contain updated record ids.');
+		}
+	}
+
+	static testMethod private void testGetQueryAsSelect2Data() {
+		ngForceController.QueryString x = new ngForceController.QueryString();
+		x.selectClause = 'test';
+		x.fromClause = 'test';
+
+		ngForceController.Select2Data y = new ngForceController.Select2Data();
+		y.id = 'foo';
+		y.name = 'bar';
+		y.searchName = 'baz';
+
+		String jsonResult = ngForceController.getQueryResultsAsSelect2Data('select id, name from Account');
+		System.assertNotEquals(null, jsonResult, 'Expected to receieve data from method');
+
+		Account a = new Account(name = 'foobarbaz', accountNumber = '111323', AnnualRevenue = 10000.00,
+		                        NumberOfEmployees = 1000);
+		insert a;
+
+		jsonResult = ngForceController.getQueryResultsAsSelect2Data('select id, name from Account');
+		System.assertNotEquals('', jsonResult, 'Expected to receieve data from method');
+
+		jsonResult = ngForceController.getQueryResultsAsSelect2Data('SELECT id, name Account');
+		assertError(jsonResult, 'INVALID_QUERY', 'ngForceController.getQueryResultsAsSelect2Data');
+	}
+
+	static testMethod private void testSObjectKlone() {
+		Account a = new Account(name = 'foobarbaz', accountNumber = '111323', AnnualRevenue = 10000.00,
+		                        NumberOfEmployees = 1000);
+		insert a;
+
+		String jsonResult = ngForceController.sObjectKlone(String.valueOf(a.Id));
+		System.assertNotEquals('', jsonResult, 'Expected to receieve data from method');
+
+	}
+
 	static private void testUpsert(String accName, String accNumber, String id, String fields) {
 		String jsonResult = ngForceController.upser('Account',
 		                    'Id',
@@ -252,6 +329,7 @@ public class ngForceController_TEST {
 		assertError(jsonResult, 'NOT_FOUND', 'ngForceController.del');
 
 		jsonResult = ngForceController.del('Account', id);
+		system.debug('$$$$$$$$$$$$' + jsonResult);
 		System.assertEquals(null, jsonResult,
 		                    'Non-null result from ngForceController.del');
 		List<Account> accounts = [SELECT Id, Name FROM Account WHERE Id = :id];

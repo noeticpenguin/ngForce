@@ -1,0 +1,14 @@
+<apex:page showheader="false" sidebar="false" contenttype="text/javascript">
+(function(angular){
+
+	var sitePrefix = '{!$Site.Prefix}';
+	if(sitePrefix === '') sitePrefix = '/apex';
+
+	angular.module('ngForce.config', []).constant('ngForceConfig', {
+		sessionId: '{!$Api.Session_ID}',
+		sitePrefix: sitePrefix,
+		resourceUrl: '' <!-- Put the path the static resource here, e.g. '{!URLFOR($Resource.bundle)}' -->
+	});
+
+})(angular);
+</apex:page>

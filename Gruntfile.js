@@ -14,33 +14,48 @@ module.exports = function(grunt) {
 
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
-		ngmin: {
+		ngAnnotate: {
+			options: {
+				singleQuotes: true
+			},
 			ngForce: {
-				expand: true,
-				cwd: 'jsSrc',
-				src: ['*.js'],
-				dest: 'buildTmp/'
+				files: [{
+					expand: true,
+					cwd: 'jsSrc',
+					ext: '.annotated.js',
+					src: ['*.js', 'subModules/*.js'],
+					dest: 'buildTmp'
+				}]
+			},
+			dependencies: {
+				files: [{
+					expand: true,
+					ext: '.annotated.js',
+					cwd: 'lib',
+					src: ['*.js'],
+					dest: 'buildTmp/lib'
+				}],
 			}
 		},
 		uglify: {
 			options: {
 				sourceMap: true,
 				banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n' +
-								'/*! visit https://noeticpenguin.github.io/ngForce for more info. */\n'
+					'/*! visit https://noeticpenguin.github.io/ngForce for more info. */\n'
 			},
 			ngForce: {
 				files: {
-					'build/ngForce.min.js': ['buildTmp/*.js']
+					'build/ngForce.min.js': ['buildTmp/*.annotated.js', 'buildTmp/subModules/*.annotated.js']
 				}
 			},
 			requirements: {
 				files: {
-					'build/ngForce-requirements.min.js': ['lib/*.js']
+					'build/ngForce-dependencies.min.js': ['buildTmp/lib/*.annotated.js']
 				}
 			},
 			oneFile: {
 				files: {
-					'build/ngForceWithRequirements.min.js': ['lib/*.js', 'buildTmp/*.js']
+					'build/ngForceWithDependencies.min.js': ['build/ngForce-dependencies.min.js', 'build/ngForce.min.js']
 				}
 			}
 		},
@@ -192,12 +207,13 @@ module.exports = function(grunt) {
 	// run ngMin, then uglify the the source into a single ngForce.min.js file.
 	grunt.registerTask('min', function() {
 		grunt.task.run([
-			'ngmin',
+			'ngAnnotate:ngForce',
+			'ngAnnotate:dependencies',
 			'uglify:ngForce',
 			'uglify:requirements',
 			'uglify:oneFile',
 			'clean:buildTmp'
-			]);
+		]);
 	});
 
 	// Show available tasks.

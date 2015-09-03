@@ -1,0 +1,24 @@
+{
+	"name": "ngForce",
+	"version": "3.0.3",
+	"homepage": "https://github.com/noeticpenguin/ngForce",
+	"authors": [
+		"Kevin Poorman <kjp@brightleafsoftware.com>"
+	],
+	"description": "Force.com Angular.js framework.",
+	"main": [
+		"./build/ngForceWithDependencies.min.js"
+	],
+	"keywords": [
+		"salesforce",
+		"angular"
+	],
+	"license": "MIT",
+	"ignore": [
+		"**/.*",
+		"node_modules",
+		"bower_components",
+		"test",
+		"tests"
+	]
+}
