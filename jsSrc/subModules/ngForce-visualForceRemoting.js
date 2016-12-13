@@ -22,6 +22,10 @@ angular.module('ngForce')
 			throw new Error('Visualforce is not available as an object! Did you forget to include the ngForce component?');
 		}
 		var vfRemote = {};
+		var standardOpts = {
+			escape: false,
+			timeout: 10000
+		};
 
 		return {
 			/**
@@ -30,10 +34,6 @@ angular.module('ngForce')
 			 * timeout: set the timeout for visualforce to respond.
 			 * @type {Object}
 			 */
-			var standardOpts = {
-				escape: false,
-				timeout: 10000
-			},
 			setStandardOptions: function(newOptions) {
 				if (newOptions && typeof newOptions !== 'object') {
 					throw new Error('standardOptions must be an object');
